@@ -1,0 +1,608 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+b{
+    position: relative;
+    color:rgb(148, 97, 4);
+    font-weight: 400;
+}
+b::after{
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 1.5em;
+    width: 12em;
+    z-index: -1;
+
+    clip-path: inset(0 100% 0 0);
+    background-color: rgb(255, 255, 255);
+    animation: landingTextAppear 1s cubic-bezier(.73,0,.12,1) forwards 1.25s;
+}
+@keyframes landingTextAppear {
+    0%{
+
+    }
+    100%{
+
+        clip-path: inset(0 0 0 0);
+    }
+}
+#root{
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+    background-color: black;
+}
+
+#landing{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+
+    animation: landingAppear 2s cubic-bezier(.62,0,.21,.99) forwards;
+}
+@keyframes landingAppear {
+    0%{
+
+    }
+    100%{
+
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
+}
+#landing img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    
+}
+#landing div{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    column-gap: 1vh;
+    color:white;
+}
+#landing div h1{
+    letter-spacing: 15px;
+    font-family: "Poppins";
+    font-weight: 400;
+    text-indent: 15px;
+}
+#landing div p{
+    letter-spacing: 5px;
+    text-indent: 5px;
+    font-size: 0.8em;
+    font-family: "Montserrat";
+    font-weight: 400;
+    height: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* Contêiner principal da galeria */
+.apresentation-hairs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   
+    
+}
+
+/* Estilizando cada item da galeria */
+.blond-hair {
+    position: relative;
+    height: 100vh;
+    
+}
+.morena {
+    position: relative;
+    height: 100vh;
+}
+.penteado {
+    z-index: -3;
+    position: relative;
+    height: 100vh;
+}
+
+/* Ajustando a imagem para ocupar o espaço corretamente */
+.blond-hair img {
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.morena img {
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.penteado img {
+    width: 100%;
+    object-fit: cover;
+    height: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Texto sobre a imagem */
+.blond-hair .text {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 217, 5);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 35px;
+    font-weight: bold;
+
+    letter-spacing: 5px;
+    font-family: "Poppins";
+    font-weight: 400;
+    text-indent: 5px;
+}
+.morena .text {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(148, 97,4);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 35px;
+    font-weight: bold;
+
+    letter-spacing: 5px;
+    font-family: "Poppins";
+    font-weight: 400;
+    text-indent: 5px;
+}
+.penteado .text {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(179, 179, 179);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 35px;
+    font-weight: bold;
+
+    letter-spacing: 5px;
+    font-family: "Poppins";
+    font-weight: 400;
+    text-indent: 5px;
+}
+
+.complements{
+    letter-spacing: 5x;
+    font-family: "Montserrat";
+    font-weight: 400;
+    text-indent: 5px;
+}
+
+.complements{
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    column-gap: 1vh;
+    color:white;
+}
+
+
+.feedbacks-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 400px;
+}
+
+.ff-item {
+    position: relative;
+    width: 100%;
+}
+
+.ff-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ff-item .text {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+}
+
+
+
+.contato {
+    background: linear-gradient(to bottom, 
+  rgba(0, 0, 0, 1) 0%, 
+  rgba(0, 0, 0, 0.4) 50%, 
+  rgba(0, 0, 0, 1) 100%),
+  url('fundo-contato.png') no-repeat center center;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .contato-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .contato-item i {
+    font-size: 26px;
+    color: #e4b055;
+  }
+
+  .contato-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .contato-info span {
+    color: #bbb;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .contato-info strong {
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+.location { 
+    position: relative;
+    width: 100%;
+    
+    text-align: center;
+    color: white;
+  }
+  
+  .location img {
+    width: 100%;
+    height: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: block;
+    object-fit: cover;
+  }
+  
+  /*  CAMADA DE GRADIENTE NA PARTE DE BAIXO */
+  .location .gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%);
+    z-index: 1;
+    pointer-events: none; 
+  }
+  
+  .location .text-overlay h2 {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    letter-spacing: 20px;
+    font-family: "Montserrat";
+    font-size: 300%;
+    font-weight: 300;
+    text-indent: 5px;
+    z-index: 2; 
+  }
+  
+  .location .text-overlay p {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 300;
+    font-family: "Montserrat";
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    letter-spacing: 4px;  
+    text-indent: 20px;
+    line-height: 2.5;
+    z-index: 2;
+  }
+
+  .feedbacks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #000;
+    padding: 60px 20px;
+    gap: 60px;
+    position: relative;
+
+  }
+  
+  .feedback-card {
+    box-shadow: 0px 10px 30px #000000;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    width: 240px; /* Tamanho da imagem */
+
+    position: relative;
+  }
+  
+  /* POSICIONAMENTO lateral */
+  .feedback-card {
+    align-self: flex-start;
+  }
+  
+  .feedback-card.reverse {
+    align-self: flex-end;
+  }
+  
+  .feedback-card img {
+    z-index: 30;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .feedback-text {
+    padding: 15px;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    color: #000;
+  }
+  
+  .feedback-text p {
+    font-style: italic;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  
+  .feedback-text span {
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  
+  .feedback-card.reverse {
+    position: relative; /* necessário para posicionamento absoluto dos pseudo-elementos */
+    z-index: 1;
+  }
+  
+ /* Linha horizontal com animação */
+.feedbacks::before {
+  content: "";
+  position: absolute;
+  width: 0;                /* começa em 0 */
+  height: 2px;
+  background: linear-gradient(90deg, #fff, rgb(0, 0, 0), #fff);
+  top: 50%;
+  left: -20%;
+  transform: translateY(-90%);
+  animation: expandLine 2s ease-out forwards, glowPulse 1.5s ease-in-out infinite;
+ 
+}
+
+/* Linha vertical com efeito energético */
+.feedbacks::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 0%;               /* começa em 0 */
+  background: linear-gradient(to top, #fff, rgb(0, 0, 0), #fff);
+  top: 0px;
+  left: 45%;
+  animation: riseLine 2s ease-out forwards, glowShift 3s linear infinite;
+  
+}
+
+/* ANIMAÇÕES */
+@keyframes expandLine {
+  to {
+    width: 500px;
+  }
+}
+
+@keyframes riseLine {
+  to {
+    height: 1660px;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px #fff;
+  }
+}
+
+@keyframes glowShift {
+  0% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+footer{
+    background-color: #000001;
+    padding: 50px 0;
+}
+.container-footer{
+
+    padding: 0 4%;
+    margin: auto;
+}
+.row-footer{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.footer-col{
+    width: 25%;
+    padding: 0 15px;
+}
+.footer-col h4{
+    font-size: 22px;
+    color: #E4B055;
+    margin-bottom: 20px;
+    font-weight: 500;
+    position: relative;
+    text-transform: uppercase;
+}
+.footer-col ul{
+    list-style: none;
+}
+.footer-col ul li{
+    margin: 10px 0;
+}
+.footer-col ul li a{
+    font-size: 16px;
+    text-transform: capitalize;
+    color: white;
+    text-decoration: none;
+    font-weight: 300;
+    display: block;
+    transition: all 0.3s ease;
+}
+.footer-col ul li a:hover{
+    color: #cecdcd;
+    padding-left: 10px;
+}
+.footer-col .medias-socias{
+    margin-top: 30px;
+}
+.footer-col .medias-socias a{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    margin: 0 10px 10px 0;
+    text-decoration: none;
+    border-radius: 50%;
+    color: white;
+    border: 1px solid white;
+    transition: all 0.5s ease;
+}
+.footer-col .medias-socias a i{
+    font-size: 20px;
+}
+
+.footer-col .medias-socias a:hover{
+    color: #f70000;
+    background-color: #E4B055;
+}
+.footer-col .form-sub input{
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    outline: none;
+    border: 1px solid white;
+    color: white;
+    background-color: #73757a;
+}
+.footer-col .form-sub input::placeholder{
+    color: white;
+}
+.footer-col .form-sub button{
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px; 
+    font-size: 17px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    border-radius: 3px;
+    font-weight: bold;
+    background-color: #E4B055;        
+}
+
+/* Responsivo */
+@media (max-width: 800px) {
+    .footer-col{
+        width: 50%;
+        margin-bottom: 30px;
+    }
+}
+@media (max-width:600px) {
+    .footer-col{
+        width: 100%;
+    }
+}
