@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!inView){
             return
         }
-        const scrollY = window.scrollY - sectionTop;
+        const scrollY = window.scrollY - sectionTop;    
         console.log(scrollY);
         // Adjust these multipliers for different speeds
         img1.style.transform = `translateY(${scrollY * -0.6}px)`;

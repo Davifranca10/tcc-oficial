@@ -5,8 +5,33 @@
     box-sizing: border-box;
 }
 b{
-    color:red;
+    position: relative;
+    color:rgb(148, 97, 4);
     font-weight: 400;
+}
+b::after{
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 1.5em;
+    width: 12em;
+    z-index: -1;
+
+    clip-path: inset(0 100% 0 0);
+    background-color: rgb(255, 255, 255);
+    animation: landingTextAppear 1s cubic-bezier(.73,0,.12,1) forwards 1.25s;
+}
+@keyframes landingTextAppear {
+    0%{
+
+    }
+    100%{
+
+        clip-path: inset(0 0 0 0);
+    }
 }
 #root{
     max-width: 100%;
@@ -14,12 +39,27 @@ b{
     flex-direction: column;
     align-items: center;
     height: fit-content;
+    background-color: black;
 }
 
 #landing{
     position: relative;
     width: 100%;
     height: 100vh;
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+
+    animation: landingAppear 2s cubic-bezier(.62,0,.21,.99) forwards;
+}
+@keyframes landingAppear {
+    0%{
+
+    }
+    100%{
+
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
 }
 #landing img{
     width: 100%;
@@ -30,6 +70,7 @@ b{
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: -1;
+    
 }
 #landing div{
     position: absolute;
@@ -51,10 +92,16 @@ b{
     text-indent: 15px;
 }
 #landing div p{
-    letter-spacing: 5x;
+    letter-spacing: 5px;
+    text-indent: 5px;
+    font-size: 0.8em;
     font-family: "Montserrat";
     font-weight: 400;
-    text-indent: 5px;
+    height: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 }
 
 /* chatgpt */
