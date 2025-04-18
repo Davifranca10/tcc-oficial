@@ -368,7 +368,7 @@ input:-webkit-autofill
 }
 
 /*VERSÃO MOBILE*/
-@media screen and (max-width: 1040px) {
+@media screen and (max-width: 768px) {
     .content {
         width: 100%;
         height: 100%;
@@ -514,14 +514,9 @@ input:-webkit-autofill
    
 }
 
-@media screen and (max-width: 740px) {
+@media screen and (max-width: 768px) {
     .form {
         width: 50%;
     }
 }
 
-@media screen and (max-width: 425px) {
-    .form {
-        width: 100%;
-    }
-}
