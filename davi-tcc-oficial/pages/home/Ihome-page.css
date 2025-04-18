@@ -622,6 +622,14 @@ footer{
     width: 25%;
     padding: 0 15px;
 }
+
+.footer-col a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
 .footer-col h4{
     font-size: 22px;
     color: #E4B055;
@@ -711,3 +719,4 @@ footer{
         width: 100%;
     }
 }
+
