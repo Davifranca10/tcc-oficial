@@ -1,0 +1,36 @@
+.list-social-media {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .list-social-media li a {
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #036159; /* Cor do círculo */
+  color: #ffffff;
+  font-size: 20px;
+  text-decoration: none;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .list-social-media li a:hover {
+    transform: scale(1.6);
+    color: #5cb69b;
+  }
+
+  .social-media {
+    margin: 1rem 0;
+  }
+ 
+  .item-social-media:not(:first-child) {
+    margin-left: 10px;
+  }
