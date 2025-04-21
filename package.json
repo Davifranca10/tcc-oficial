@@ -1,0 +1,26 @@
+{
+  "name": "tcc-oficial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Davifranca10/tcc-oficial.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Davifranca10/tcc-oficial/issues"
+  },
+  "homepage": "https://github.com/Davifranca10/tcc-oficial#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.0"
+  }
+}
