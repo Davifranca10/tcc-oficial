@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap');
+
+:root{
+    --themeColor:#734432;
+    --iconBackgroudColor: #734432;
+}
 * {
     margin: 0;
     padding: 0;
@@ -12,10 +17,10 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #ecf0f1;
+    background-color: #f1f0f0;
 }
 .content {
-    background-color: #fff;
+    background-color: #e5e1df;
     border-radius: 15px;
     width: 960px;
     height: 50%;
@@ -26,7 +31,7 @@ body {
 .content::before {
     content: "";
     position: absolute;
-    background-color: #58af9b;
+    background-color: var(--themeColor);
     width: 40%;
     height: 100%;
     border-top-left-radius: 15px;
@@ -44,7 +49,7 @@ body {
     color: #fff;
 }
 .title-second {
-    color: #58af9b;
+    color: var(--themeColor);
 }
 .description {
     font-size: 14px;
@@ -77,17 +82,17 @@ body {
 }
 .btn-primary:hover {
     background-color: #fff;
-    color: #58af9b;
+    color: var(--themeColor);
 }
 .btn-second {
-    background-color: #58af9b;
-    border: 1px solid #58af9b;
+    background-color: var(--themeColor);
+    border: 1px solid var(--themeColor);
     transition: background-color .5s;
 }
 .btn-second:hover {
     background-color: #fff;
-    border: 1px solid #58af9b;
-    color: #58af9b;
+    border: 1px solid var(--themeColor);
+    color: var(--themeColor);
 }
 .first-content {
     display: flex;
@@ -123,7 +128,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #036159; /* Cor do círculo */
+  background-color: var(--iconBackgroudColor); /* Cor do círculo */
   color: #ffffff;
   font-size: 20px;
   text-decoration: none;
@@ -133,7 +138,7 @@ body {
   
   .list-social-media li a:hover {
     transform: scale(1.6);
-    color: #5cb69b;
+    color: #ddcece;
   }
 
   .social-media {
