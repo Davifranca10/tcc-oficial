@@ -8,6 +8,52 @@
     <title>Página de Vendas</title>
 </head>
 
+
+
+<div id="navBarRoot">
+    <header>
+        <div id="menuBtn" class="menu-btn">
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+        </div>
+
+        <div id="navBackground">
+            <p onclick="window.location.href='../index.html'">INÍCIO</p>
+            <p onclick="window.location.href='index.html'">SERVIÇOS</p>
+            <p onclick="window.location.href='../agend/index.html'">AGENDA</p>
+            
+        </div>
+    </header>
+</div>
+
+<script>
+    const menuBtn = document.getElementById("menuBtn");
+    const navBackground = document.getElementById("navBackground");
+    let showMenu = false;
+
+    menuBtn.addEventListener("click", () => {
+        showMenu = !showMenu;
+
+        // Toggle class
+        menuBtn.classList.toggle("close", showMenu);
+        navBackground.classList.toggle("show", showMenu);
+
+        // Manage transition delays
+        navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+        navBackground.childNodes.forEach((el) => {
+            if (el.nodeType === 1) {
+                el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+            }
+        });
+    });
+
+    function navigateTo(path) {
+        // This simulates navigation; replace with real logic if needed
+        alert(`Navigating to ${path}`);
+    }
+</script>
+
 <header>
     <h1> Promoções Imperdíveis </h1>
     <p>Transforme seu visual com estilo e economia!</p>

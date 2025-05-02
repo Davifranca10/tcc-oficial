@@ -109,4 +109,63 @@ const startServer = async () => {
   });
 };
 
+// List users
+app.get("/clients", async (req, res) => {
+  try {
+    const [users] = await pool.query("SELECT id, name, email FROM users");
+
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//Edit users
+app.put("/clients/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
+
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const [result] = await pool.query(
+      "UPDATE users SET name = ?, email = ?, passwordHash = ? WHERE id = ?",
+      [name, email, passwordHash, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    res.status(200).json({ message: "Usuário atualizado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao atualizar usuário:", err);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+//Delete users
+app.delete("/clients/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await pool.query(
+      "DELETE FROM users WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    res.status(200).json({ message: "Usuário deletado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao deletar usuário:", err);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+
+
 startServer();
