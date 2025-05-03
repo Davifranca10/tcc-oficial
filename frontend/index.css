@@ -220,6 +220,66 @@ b::after{
 
 }
 
+.cadastro-container {
+    margin-top: 30vh;
+    z-index: 1000;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+  }
+  
+  .cadastro-container p {
+    margin: 0 0 8px 0;
+    font-weight: 500;
+    color: #a19a9a; /* Cor do texto */
+  }
+  
+  /* Botão com animação */
+  .btn-cadastrar {
+    display: inline-block;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  
+  .btn-cadastrar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: #7e5647;
+    z-index: 0;
+    transition: width 4s ease-out;
+    animation: fillLeftToRight 4s forwards;
+  }
+  
+  .btn-cadastrar span {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Animação do preenchimento */
+  @keyframes fillLeftToRight {
+    from {
+      width: 0%;
+    }
+    to {
+      width: 100%;
+    }
+  }
+    
+  
+    
+
 /* chatgpt */
 
  /* Resetando margens e preenchimentos padrão */
@@ -405,7 +465,7 @@ b::after{
 
   .contato-item i {
     font-size: 26px;
-    color: #e4b055;
+    color: #eea1a2;
   }
 
   .contato-info {
@@ -429,7 +489,7 @@ b::after{
 
   .contato h2 {
     text-align: center;
-    color: #ccbd7a;
+    color: #eea1a2;
     letter-spacing: 1vh;
     
     position: relative;
@@ -632,7 +692,7 @@ footer{
 
 .footer-col h4{
     font-size: 22px;
-    color: #E4B055;
+    color: #8b5657;
     margin-bottom: 20px;
     font-weight: 500;
     position: relative;
@@ -678,8 +738,8 @@ footer{
 }
 
 .footer-col .medias-socias a:hover{
-    color: #f70000;
-    background-color: #E4B055;
+    color: #fd8284;
+    background-color: #8b5657;
 }
 .footer-col .form-sub input{
     width: 100%;
@@ -704,7 +764,7 @@ footer{
     color: #ffffff;
     border-radius: 3px;
     font-weight: bold;
-    background-color: #E4B055;        
+    background-color: #be6061;        
 }
 
 /* Responsivo */

@@ -8,13 +8,13 @@
 /* Fonte e cor de fundo agradáveis */
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(to bottom right, #f0f4f8, #ffffff); /* ADIÇÃO */
+    background: linear-gradient(to bottom right, #f0cdce, #ffffff); /* ADIÇÃO */
     color: #333;
 }
 
 /* Estilo moderno para o cabeçalho */
 .hero { /* ADIÇÃO */
-    background: linear-gradient(to right, #4CAF50, #388e3c);
+    background: linear-gradient(to right, #6e494a, #815050);
     color: white;
     padding: 3rem 1rem;
     text-align: center;
@@ -23,6 +23,7 @@ body {
     border-bottom-right-radius: 2rem;
 }
 .hero h1 {
+    margin-top: 4vh;
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
@@ -49,7 +50,7 @@ body {
 
 /* Estilo dos eventos */
 .fc-event {
-    background-color: #4CAF50;
+    background-color: #c28a8b;
     color: white;
     border-radius: 6px;
     padding: 4px 6px;
@@ -58,7 +59,7 @@ body {
     transition: background 0.3s ease;
 }
 .fc-event:hover {
-    background-color: #2e7d32;
+    background-color: #e97678;
     cursor: pointer;
 }
 
@@ -73,10 +74,11 @@ body {
     transition: background 0.3s ease;
 }
 .fc-button:hover {
-    background-color: #43a047;
+    background-color: #cc6667;
 }
 
-/* Título*
+
+
 
 #navBarRoot{
     position: fixed;
@@ -144,7 +146,7 @@ body {
 #navBackground{
     transition: 0.25s ease-in-out;
     position: absolute;
-    background-color: rgb(20, 20, 20);
+    background-color: #B18788;
     width: 0%;  
     height: 70px;
 

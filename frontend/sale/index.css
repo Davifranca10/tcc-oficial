@@ -1,20 +1,22 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #fff9f5;
+  background-color: #ffffff;
   color: #333;
 }
 
 header {
   text-align: center;
   padding: 2rem 1rem;
-  background-color: #f7d9cd;
-  color: #6e3c2c;
+  background-color: #FFF3D9;
+  color: #B18788;
 }
 
 header h1 {
+
   font-size: 2.5rem;
   margin: 0;
+  margin-top: 5vh;
   animation: pulse 2s infinite;
 }
 
@@ -32,6 +34,7 @@ header p {
   margin-bottom: -5vh;
   z-index: 100;
   animation: appear 3s ease-out;
+  
 
 }
 
@@ -45,6 +48,7 @@ header p {
   height: 20px;
   cursor: pointer;
   transition: all 0.5s ease-out;
+  
 }
 
 /* Styling the hamburger lines */
@@ -52,22 +56,30 @@ header p {
   width: 28px;
   height: 3px;
   margin: 0 0 5px 0;
-  background: white;
+  background: #B18788;
+  
   transition: all 0.5s ease-out;
+}
+
+.menu-btn.close .btn-line {
+  background: white;
 }
 
 /* Adding transform to the X */
 .menu-btn.close {
   transform: rotate(180deg);
+
 }
 
 /* Styling the three lines to make it an X */
 .menu-btn.close .btn-line:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
+  
 }
 
 .menu-btn.close .btn-line:nth-child(2) {
   opacity: 0;
+  
 }
 
 .menu-btn.close .btn-line:nth-child(3) {
@@ -91,7 +103,7 @@ header p {
 #navBackground{
   transition: 0.25s ease-in-out;
   position: absolute;
-  background-color: rgb(20, 20, 20);
+  background-color: #B18788;
   width: 0%;  
   height: 70px;
 
@@ -178,4 +190,71 @@ header p {
   display: block;
   transition: transform 0.3s ease;
 }
+
+/* Tela preta */
+#introOverlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1000;
+  animation: slideDown 5.0s ease forwards;
+}
+
+/* Animação da tela preta */
+@keyframes slideDown {
+  from {
+    top: 0;
+  }
+  to {
+    top: 100%;
+  }
+}
+
+.reveal-text span {
+  opacity: 0;
+  display: inline-block;
+  transform: translateY(20px) scale(1.1);
+  filter: blur(4px);
+  animation: fadeInLetter 0.5s forwards;
+}
+
+@keyframes fadeInLetter {
+  to {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+    filter: blur(0);
+  }
+}
+
+.icon a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  margin: 0 10px 10px 0;
+  text-decoration: none;
+  border-radius: 50%;
+  color: white;
+  border: 1px solid white;
+  transition: all 0.5s ease;
+  background-color: #b68d7d; /* Cor de fundo inicial */
+}
+
+a i {
+  font-size: 20px;
+}
+
+a:hover {
+  color: #a70399;
+  background-color: #E4B055;
+  transform: scale(1.2); /* Aumenta o tamanho quando hover */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Efeito de brilho */
+}
+
+#insta-arroba{
+  margin-top: -1vh;
+}
+
 
