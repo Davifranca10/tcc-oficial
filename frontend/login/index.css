@@ -52,16 +52,17 @@ body {
     color: var(--themeColor);
 }
 .description {
+    margin-top: 2vh;
     font-size: 14px;
     font-weight: 300;
-    line-height: 30px;
+    line-height: 5px;
 }
 .description-primary {
     color: #fff;
+    
 }
-.description-second {
-    color: #7f8c8d;
-}
+
+
 .btn {
     border-radius: 15px;
     text-transform: uppercase;
@@ -73,7 +74,7 @@ body {
     width: 150px;
     align-self: center;
     border: none;
-    margin-top: 1rem;
+    margin-top: 3rem;
 }
 .btn-primary {
     background-color: transparent;

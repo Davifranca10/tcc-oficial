@@ -68,3 +68,27 @@ loginForm.addEventListener("submit", async function (e) {
         console.error(err);
     }
 });
+
+//Login Administrador
+
+document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.getElementById("loginForm");
+  
+    loginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+  
+      const email = loginForm.querySelector('input[type="email"]').value;
+      const password = loginForm.querySelector('input[type="password"]').value;
+  
+      // Credenciais do administrador
+      const adminEmail = "admin@admin.com";
+      const adminPassword = "12345678";
+  
+      // Verifica se é administrador
+      if (email === adminEmail && password === adminPassword) {
+        window.location.href = "../adm/index.html";
+      } else {
+        window.location.href = "../index.html";
+      }
+    });
+  });

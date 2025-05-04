@@ -60,19 +60,16 @@ body {
     background-color: #d6eaff;
   }
 
-  #navBarRoot{
+  #navBarRoot {
     position: fixed;
     height: 5vh;
     width: 100%;
     margin-bottom: -5vh;
     z-index: 100;
     animation: appear 3s ease-out;
-
-}
-
-
-
-.menu-btn {
+  }
+  
+  .menu-btn {
     position: absolute;
     z-index: 3;
     left: 25px;
@@ -80,85 +77,112 @@ body {
     height: 20px;
     cursor: pointer;
     transition: all 0.5s ease-out;
-}
-
-/* Styling the hamburger lines */
-.menu-btn .btn-line {
+  }
+  
+  .menu-btn .btn-line {
     width: 28px;
     height: 3px;
     margin: 0 0 5px 0;
     background: white;
     transition: all 0.5s ease-out;
-}
-
-/* Adding transform to the X */
-.menu-btn.close {
+  }
+  
+  .menu-btn.close {
     transform: rotate(180deg);
-}
-
-/* Styling the three lines to make it an X */
-.menu-btn.close .btn-line:nth-child(1) {
+  }
+  
+  .menu-btn.close .btn-line:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
-}
-
-.menu-btn.close .btn-line:nth-child(2) {
+  }
+  
+  .menu-btn.close .btn-line:nth-child(2) {
     opacity: 0;
-}
-
-.menu-btn.close .btn-line:nth-child(3) {
+  }
+  
+  .menu-btn.close .btn-line:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
-}
-
-/* Styling the position of the menu icon */
-.menu {
+  }
+  
+  .menu {
     position: fixed;
     z-index: 2;
     top: 0;
     width: 100%;
     opacity: 0.9;
     visibility: hidden;
-}
-
-.menu.show {
+  }
+  
+  .menu.show {
     visibility: visible;
-}
-
-#navBackground{
-    transition: 0.25s ease-in-out;
-    position: absolute;
+  }
+  
+  #navBackground {
+    transition: width 0.3s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
     background-color: rgb(20, 20, 20);
-    width: 0%;  
-    height: 70px;
+    width: 0;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 1;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: start;
+    padding-top: 80px; /* espaço abaixo da navbar */
+    padding-left: 20px;
+    row-gap: 20px;
+  }
+  
+  #navBackground.show {
+    width: 180px;
+  }
+  
+  #navBackground p {
+    cursor: pointer;
+    text-align: left;
 
+    position: relative;
+    top: 9vh;
+
+    letter-spacing: 1px;
+    font-size: 0.9em;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+  
+    color: white;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  
+  #navBackground.show p {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .feedbacks {
+    margin-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    height: 200vh; /* Para testar o scroll/parallax */
+    padding: 50px;
+  }
+  
+  .feedback-card {
+    background: #1f1f1f;
+    border-radius: 10px;
+    width: 60%;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    column-gap: 5vw;
-}
-#navBackground.show{
-    width: 100%;
-}
-#navBackground p{
-    cursor: pointer;
-    text-align: center;
-
-    letter-spacing: 3px;
-    text-indent: 5px;
-    font-size: 0.6em;
-    font-family: "Montserrat";
-    font-weight: 400;
-
-    color:white;
-    transition-duration: 0.25s;
-    opacity: 0;
-    filter: brightness(0.5) blur(5px);
-    transform: translateY(1vh);
-}
-
-#navBackground.show p{
-    filter: brightness(1) blur(0px);
-    transform: translateY(0vh);
-    opacity: 1;
-}
+    font-weight: bold;
+    font-size: 1.2em;
+    transition: transform 0.3s;
+  }
   
   
