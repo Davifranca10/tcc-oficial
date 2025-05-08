@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listagem de Serviços</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+  <div id="navBarRoot">
+    <header>
+        <div id="menuBtn" class="menu-btn">
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+        </div>
+
+        <div id="navBackground">
+          <p onclick="window.location.href='../adm/index.html'">Início</p>
+          <p onclick="window.location.href='index.html'">Gerenciar Serviços</p>
+          <p onclick="window.location.href='index.html'">Configurações</p>
+        </div>
+    </header>
+  </div>
+
+  <div class="container">
+    <h1>Serviços Cadastrados</h1>
+    <button id="addServiceBtn" class="add-service-btn">+</button>
+
+    <table id="serviceTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Preço</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados inseridos dinamicamente via JS -->
+      </tbody>
+    </table>
+
+    <div class="buttons">
+        <a href="../editar/index.html?id=ID_DO_SERVIÇO" id="editLink">
+            <button>Editar</button>
+        </a>    
+
+        <a href="../excluir/index.html">
+            <button>Deletar</button>
+        </a>          
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>

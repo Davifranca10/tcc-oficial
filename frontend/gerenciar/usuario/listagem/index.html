@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listagem de Usuários</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="navBarRoot">
+    <header>
+        <div id="menuBtn" class="menu-btn">
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+        </div>
+
+        <div id="navBackground">
+          <p onclick="window.location.href='../adm/index.html'">Início</p>
+                <p onclick="window.location.href='index.html'">Gerenciar Usuários</p>
+                <p onclick="window.location.href='index.html'">Configurações</p>
+            
+        </div>
+    
+</div>
+</header>
+<script>
+  const menuBtn = document.getElementById("menuBtn");
+  const navBackground = document.getElementById("navBackground");
+  let showMenu = false;
+
+  menuBtn.addEventListener("click", () => {
+      showMenu = !showMenu;
+
+      // Toggle class
+      menuBtn.classList.toggle("close", showMenu);
+      navBackground.classList.toggle("show", showMenu);
+
+      // Manage transition delays
+      navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+      navBackground.childNodes.forEach((el) => {
+          if (el.nodeType === 1) {
+              el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+          }
+      });
+  });
+
+  function navigateTo(path) {
+      // This simulates navigation; replace with real logic if needed
+      alert(`Navigating to ${path}`);
+  }
+</script>
+
+  <div class="container">
+    <h1>Clientes Cadastrados</h1>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados inseridos dinamicamente via JS -->
+      </tbody>
+    </table>
+
+    <div class="buttons">
+        <a href="../editar/index.html?id=ID_DO_USUARIO" id="editLink">
+            <button>Editar</button>
+          </a>    
+                
+          <a href="../excluir/index.html">
+            <button>Deletar</button>
+          </a>          
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

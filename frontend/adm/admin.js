@@ -1,3 +1,12 @@
+
+ // Menu interativo
+ const menuBtn = document.getElementById('menuBtn');
+ const navBg = document.getElementById('navBackground');
+
+ menuBtn.addEventListener('click', () => {
+     menuBtn.classList.toggle('close');
+     navBg.classList.toggle('show');
+ });
 document.addEventListener("DOMContentLoaded", () => {
     const elements = document.querySelectorAll(".feedback-card");
     const img1 = elements[0];
@@ -29,12 +38,5 @@ document.addEventListener("DOMContentLoaded", () => {
         img3.style.transform = `translateY(${scrollY * -0.2}px)`;
     });
 
-    // Menu interativo
-    const menuBtn = document.getElementById('menuBtn');
-    const navBg = document.getElementById('navBackground');
-
-    menuBtn.addEventListener('click', () => {
-        menuBtn.classList.toggle('close');
-        navBg.classList.toggle('show');
-    });
+   
 });

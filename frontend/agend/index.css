@@ -180,3 +180,37 @@ body {
     transform: translateY(0vh);
     opacity: 1;
 }
+
+.centralizar-horizontal {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .meu-botao {
+    padding: 12px 24px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+.botao-verificar {
+    background-color: #dd9394;         /* Azul vibrante */
+    color: white;                      /* Texto branco */
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    justify-items: center;
+  }
+  
+  .botao-verificar:hover {
+    background-color: #cc8f90;         /* Azul mais escuro no hover */
+    transform: scale(1.05);
+  }

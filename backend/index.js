@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 const SECRET_KEY = "chave_secreta";
 
+//---------------------------------------------------------------------------------------------------
+
 const initDb = async () => {
   const connection = await mysql.createConnection({
     host: "localhost",
@@ -50,7 +52,7 @@ const initDb = async () => {
       nome VARCHAR(100) NOT NULL,
       descricao TEXT,
       preco DECIMAL(10, 2) NOT NULL,
-      duracao_em_minutos INT
+      duracao INT
     )
   `);
 
@@ -61,7 +63,7 @@ const initDb = async () => {
       nome VARCHAR(100) NOT NULL,
       especialidade VARCHAR(100),
       telefone VARCHAR(20),
-      email VARCHAR(100) UNIQUE
+      email VARCHAR(100) UNIQUE,
       passwordHash VARCHAR(255) NOT NULL
     )
   `);
@@ -85,6 +87,8 @@ const initDb = async () => {
   // ✅ Só encerre a conexão aqui
   await connection.end();
 };
+
+//-------------------------------------------------------------------------------------------
 
 let pool;
 const startServer = async () => {
@@ -151,9 +155,6 @@ const startServer = async () => {
 };
 
 
-
-
-
 // Criar agendamento Davi
 app.post("/agendamentos", async (req, res) => {
   const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
@@ -172,6 +173,39 @@ app.post("/agendamentos", async (req, res) => {
   }
 });
 
+//Criar Serviço
+app.post("/servicos", async (req, res) => {
+  const { nome, descricao, preco, duracao } = req.body;
+
+  if (!nome || !preco || !duracao) {
+    return res.status(400).json({ message: "Campos obrigatórios: nome, preco e duracao." });
+  }
+
+  try {
+    await pool.query(
+      "INSERT INTO servicos (nome, descricao, preco, duracao) VALUES (?, ?, ?, ?)",
+      [nome, descricao || "", preco, duracao]
+    );
+    res.status(201).json({ message: "Serviço cadastrado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao cadastrar serviço:", err);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+// Listar todos os serviços
+app.get("/servicos", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM servicos");
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar serviços:", err);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+
+
 //Listar Agendamentos Davi
 app.get("/agendamentos", async (req, res) => {
   try {
@@ -182,9 +216,6 @@ app.get("/agendamentos", async (req, res) => {
     res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
-
-
-
 
 
 // List users
@@ -244,6 +275,8 @@ app.delete("/clients/:id", async (req, res) => {
   }
 });
 
+
+
 // Recebe data e serviço para Disponibilidade de horarios Davi
 app.post('/disponibilidade', async (req, res) => {
   const { data, id_servico } = req.body;
@@ -256,5 +289,37 @@ app.post('/disponibilidade', async (req, res) => {
   res.json(horariosPossiveis);
 });
 
+//PegarDuracaoServico
+async function getDuracaoServico(id_servico) {
+  const [rows] = await pool.query("SELECT duracao FROM servicos WHERE id = ?", [id_servico]);
+  if (rows.length === 0) throw new Error("Serviço não encontrado");
+  return rows[0].duracao_em_minutos;
+}
+
+//PegarAgendamentosPorDia
+async function getAgendamentosPorDia(data) {
+  const [rows] = await pool.query("SELECT horario, id_servico FROM agendamentos WHERE data = ?", [data]);
+  return rows;
+}
+
+//Gerar Horario Permitido
+function gerarHorariosValidos(duracao, agendamentos) {
+  const horaInicio = 8;
+  const horaFim = 18;
+
+  const ocupados = agendamentos.map(a => a.horario.slice(0,5)); // 'HH:MM'
+  const horariosDisponiveis = [];
+
+  for (let h = horaInicio; h < horaFim; h++) {
+    for (let m = 0; m < 60; m += duracao) {
+      const hora = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      if (!ocupados.includes(hora)) {
+        horariosDisponiveis.push(hora);
+      }
+    }
+  }
+
+  return horariosDisponiveis;
+}
 
 startServer();
