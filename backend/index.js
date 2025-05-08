@@ -35,6 +35,7 @@ const initDb = async () => {
     CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
+      telefone VARCHAR(15) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
       passwordHash VARCHAR(255) NOT NULL
     )
@@ -48,7 +49,8 @@ const initDb = async () => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       nome VARCHAR(100) NOT NULL,
       descricao TEXT,
-      preco DECIMAL(10, 2) NOT NULL
+      preco DECIMAL(10, 2) NOT NULL,
+      duracao_em_minutos INT
     )
   `);
 
@@ -57,9 +59,10 @@ const initDb = async () => {
     CREATE TABLE IF NOT EXISTS funcionarios (
       id INT AUTO_INCREMENT PRIMARY KEY,
       nome VARCHAR(100) NOT NULL,
-      email VARCHAR(100) UNIQUE,
+      especialidade VARCHAR(100),
       telefone VARCHAR(20),
-      especialidade VARCHAR(100)
+      email VARCHAR(100) UNIQUE
+      passwordHash VARCHAR(255) NOT NULL
     )
   `);
 
@@ -241,6 +244,17 @@ app.delete("/clients/:id", async (req, res) => {
   }
 });
 
+// Recebe data e serviço para Disponibilidade de horarios Davi
+app.post('/disponibilidade', async (req, res) => {
+  const { data, id_servico } = req.body;
+
+  const duracaoServico = await getDuracaoServico(id_servico);
+  const agendamentos = await getAgendamentosPorDia(data);
+
+  const horariosPossiveis = gerarHorariosValidos(duracaoServico, agendamentos);
+  
+  res.json(horariosPossiveis);
+});
 
 
 startServer();
