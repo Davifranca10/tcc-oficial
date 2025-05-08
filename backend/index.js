@@ -42,6 +42,44 @@ const initDb = async () => {
 
   console.log("Database and table are ready");
 
+  // Create servicos table
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS servicos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nome VARCHAR(100) NOT NULL,
+      descricao TEXT,
+      preco DECIMAL(10, 2) NOT NULL
+    )
+  `);
+
+  // Create funcionarios table
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS funcionarios (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nome VARCHAR(100) NOT NULL,
+      email VARCHAR(100) UNIQUE,
+      telefone VARCHAR(20),
+      especialidade VARCHAR(100)
+    )
+  `);
+
+  // Create agendamentos table
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS agendamentos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      id_cliente INT,
+      id_servico INT,
+      id_funcionario INT,
+      data DATE,
+      horario TIME,
+      status VARCHAR(50),
+      FOREIGN KEY (id_cliente) REFERENCES users(id),
+      FOREIGN KEY (id_servico) REFERENCES servicos(id),
+      FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id)
+    )
+  `);
+
+  // ✅ Só encerre a conexão aqui
   await connection.end();
 };
 
@@ -108,6 +146,43 @@ const startServer = async () => {
     console.log("Server started on http://localhost:3000");
   });
 };
+
+
+
+
+
+// Criar agendamento Davi
+app.post("/agendamentos", async (req, res) => {
+  const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
+
+  try {
+    const status = "pendente";
+    await pool.query(
+      "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, ?)",
+      [id_cliente, id_servico, id_funcionario, data, horario, status]
+    );
+
+    res.status(201).json({ message: "Agendamento criado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao criar agendamento:", err);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+//Listar Agendamentos Davi
+app.get("/agendamentos", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM agendamentos");
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar agendamentos:", err);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+
+
+
 
 // List users
 app.get("/clients", async (req, res) => {
