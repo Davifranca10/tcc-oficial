@@ -1,9 +1,3 @@
-
-
-/*
-OBS: trocar password e user hardcoded por variáveis de ambiente
-*/
-
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -16,8 +10,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const SECRET_KEY = "chave_secreta";
-
-//---------------------------------------------------------------------------------------------------
 
 const initDb = async () => {
   const connection = await mysql.createConnection({
@@ -84,11 +76,9 @@ const initDb = async () => {
     )
   `);
 
-  // ✅ Só encerre a conexão aqui
+  //Só encerre a conexão aqui
   await connection.end();
 };
-
-//-------------------------------------------------------------------------------------------
 
 let pool;
 const startServer = async () => {

@@ -1,122 +1,83 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f2f2f2;
     margin: 0;
-    padding: 0;
-}
-
-.container {
-    width: 80%;
-    margin: 20px auto;
-    background-color: white;
     padding: 20px;
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative; /* Adicionando posicionamento relativo */
-}
-
-h1 {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  h1 {
     text-align: center;
+    margin-bottom: 30px;
     color: #333;
-}
-
-table {
+  }
+  
+  table {
     width: 100%;
-    margin-top: 20px;
     border-collapse: collapse;
-}
-
-table th, table td {
-    padding: 10px;
+    margin-top: 20px;
+  }
+  
+  table th, table td {
+    padding: 12px;
     border: 1px solid #ddd;
     text-align: left;
-}
-
-table th {
-    background-color: #f2f2f2;
-}
-
-button {
+  }
+  
+  table th {
+    background-color: #f7f7f7;
+  }
+  
+  button {
     padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
     margin: 5px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.selected {
-    background-color: #d3f9d8;
-}
-
-#navBarRoot {
-    background-color: #333;
-    padding: 10px;
-}
-
-#menuBtn {
-    display: inline-block;
-    cursor: pointer;
-}
-
-#menuBtn .btn-line {
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin: 5px 0;
-}
-
-#navBackground {
-    display: none;
-}
-
-#navBackground.show {
-    display: block;
-    background-color: rgba(0, 0, 0, 0.7);
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding-top: 60px;
-}
-
-#navBackground p {
-    color: white;
-    padding: 10px;
-    cursor: pointer;
-}
-
-#navBackground p:hover {
-    background-color: #575757;
-}
-
-/* Estilo para o botão de adicionar serviço */
-.add-service-btn {
-    position: absolute; /* Posicionando o botão no canto superior direito */
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
+    border: none;
     background-color: #4CAF50;
     color: white;
-    font-size: 30px;
-    font-weight: bold;
-    border-radius: 50%;
-    border: none;
+    border-radius: 4px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-}
-
-.add-service-btn:hover {
+    transition: background 0.3s ease;
+  }
+  
+  button:hover {
     background-color: #45a049;
-}
+  }
+  
+  button.delete {
+    background-color: #e74c3c;
+  }
+  
+  button.delete:hover {
+    background-color: #c0392b;
+  }
+  
+  button.edit {
+    background-color: #f39c12;
+  }
+  
+  button.edit:hover {
+    background-color: #d68910;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  
+  form input, form textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
