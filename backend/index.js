@@ -93,23 +93,27 @@ const startServer = async () => {
 
   // Register
   app.post("/register", async (req, res) => {
-    const { name, email, password } = req.body;
+  const { name, email, telefone, password } = req.body;
+  console.log("Recebido no /register:", { name, email, telefone, password });
 
-    try {
-      const [existing] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
-      if (existing.length > 0) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      const passwordHash = await bcrypt.hash(password, 10);
-      await pool.query("INSERT INTO users (name, email, passwordHash) VALUES (?, ?, ?)", [name, email, passwordHash]);
-
-      res.status(201).json({ message: "User registered successfully" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+  try {
+    const [existing] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (existing.length > 0) {
+      return res.status(400).json({ message: "User already exists" });
     }
-  });
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await pool.query(
+      "INSERT INTO users (name, telefone, email, passwordHash) VALUES (?, ?, ?, ?)",
+      [name, telefone, email, passwordHash]
+    );
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    console.error("Erro no /register:", err.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
   // Login
   app.post("/login", async (req, res) => {
@@ -145,7 +149,7 @@ const startServer = async () => {
 };
 
 
-// Criar agendamento Davi
+// Criar agendamento
 app.post("/agendamentos", async (req, res) => {
   const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
 
@@ -196,7 +200,7 @@ app.get("/servicos", async (req, res) => {
 
 
 
-//Listar Agendamentos Davi
+//Listar Agendamentos
 app.get("/agendamentos", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM agendamentos");
@@ -211,7 +215,7 @@ app.get("/agendamentos", async (req, res) => {
 // List users
 app.get("/clients", async (req, res) => {
   try {
-    const [users] = await pool.query("SELECT id, name, email FROM users");
+    const [users] = await pool.query("SELECT id, name, telefone, email FROM users");
 
     res.json(users);
   } catch (err) {
@@ -223,14 +227,14 @@ app.get("/clients", async (req, res) => {
 //Edit users
 app.put("/clients/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, email, password } = req.body;
+  const { name, telefone, email, password } = req.body;
 
   try {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const [result] = await pool.query(
-      "UPDATE users SET name = ?, email = ?, passwordHash = ? WHERE id = ?",
-      [name, email, passwordHash, id]
+      "UPDATE users SET name = ?, telefone = ?, email = ?, passwordHash = ? WHERE id = ?",
+      [name, telefone, email, passwordHash, id]
     );
 
     if (result.affectedRows === 0) {

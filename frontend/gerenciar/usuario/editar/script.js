@@ -33,6 +33,7 @@ fetch("http://localhost:3000/clients")
 // Preenche os campos do formulário com os dados do usuário selecionado
 function fillForm(user) {
   document.getElementById("name").value = user.name;
+  document.getElementById("telefone").value = user.telefone || "";
   document.getElementById("email").value = user.email;
   document.getElementById("password").value = "";
 }
@@ -43,6 +44,7 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
 
   const userId = userSelect.value;
   const name = document.getElementById("name").value;
+  const telefone = document.getElementById("telefone").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -54,7 +56,7 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
     const response = await fetch(`http://localhost:3000/clients/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, telefone, email, password }),
     });
 
     const result = await response.json();
@@ -107,7 +109,3 @@ document.addEventListener("DOMContentLoaded", () => {
       img3.style.transform = `translateY(${scrollY * -0.2}px)`;
   });
 });
-
-
-
-

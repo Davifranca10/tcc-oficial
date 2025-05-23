@@ -1,53 +1,64 @@
-var btnSignin = document.querySelector("#signin");
-var btnSignup = document.querySelector("#signup");
-var body = document.querySelector("body");
-
-//obs: não está armazenando o token ainda para futuras requisições
-
-const registerForm = document.querySelectorAll(".form")[0];
-const loginForm = document.querySelectorAll(".form")[1];
+const btnSignin = document.querySelector("#signin");
+const btnSignup = document.querySelector("#signup");
+const body = document.querySelector("body");
 
 btnSignin.addEventListener("click", function () {
-    body.className = "sign-in-js"; 
+    body.className = "sign-in-js";
 });
 
 btnSignup.addEventListener("click", function () {
     body.className = "sign-up-js";
 });
 
-// Register
+// Cadastro de usuário
+const registerForm = document.querySelector("#registerForm");
+
 registerForm.addEventListener("submit", async function (e) {
     e.preventDefault();
-    
-    const name = registerForm.querySelector("input[placeholder='Nome']").value;
-    const email = registerForm.querySelector("input[placeholder='Email']").value;
-    const password = registerForm.querySelector("input[placeholder='Senha']").value;
+
+    const name = document.getElementById("nome").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("senha").value.trim();
+
+    if (!name || !telefone || !email || !password) {
+        alert("Preencha todos os campos corretamente.");
+        return;
+    }
 
     try {
         const res = await fetch("http://localhost:3000/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password })
+            body: JSON.stringify({ name, telefone, email, password })
         });
 
         const data = await res.json();
         if (res.ok) {
-            window.location.href = "/frontend/index.html"
+            alert("Usuário cadastrado com sucesso!");
+            window.location.href = "/frontend/index.html";
         } else {
-
+            alert(data.message || "Erro ao cadastrar.");
         }
     } catch (err) {
-
-        console.error(err);
+        console.error("Erro ao enviar dados:", err);
+        alert("Erro interno no servidor.");
     }
 });
 
-// Login
+// Login de usuário
+const loginForm = document.querySelector("#loginForm");
+
 loginForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const email = loginForm.querySelector("input[placeholder='Email']").value;
-    const password = loginForm.querySelector("input[placeholder='Senha']").value;
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginSenha").value.trim();
+
+    if (!email || !password) {
+        alert("Preencha todos os campos.");
+        return;
+    }
 
     try {
         const res = await fetch("http://localhost:3000/login", {
@@ -58,37 +69,13 @@ loginForm.addEventListener("submit", async function (e) {
 
         const data = await res.json();
         if (res.ok) {
-            console.log("Token:", data.token); // token a ser salvo no localstorage
-            window.location.href = "/frontend/index.html"
+            console.log("Token:", data.token); // Salve se necessário
+            window.location.href = "/frontend/index.html";
         } else {
-
+            alert(data.message || "Email ou senha inválidos.");
         }
     } catch (err) {
-
-        console.error(err);
+        console.error("Erro no login:", err);
+        alert("Erro ao fazer login.");
     }
 });
-
-//Login Administrador
-
-document.addEventListener("DOMContentLoaded", function () {
-    const loginForm = document.getElementById("loginForm");
-  
-    loginForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-  
-      const email = loginForm.querySelector('input[type="email"]').value;
-      const password = loginForm.querySelector('input[type="password"]').value;
-  
-      // Credenciais do administrador
-      const adminEmail = "admin@admin.com";
-      const adminPassword = "12345678";
-  
-      // Verifica se é administrador
-      if (email === adminEmail && password === adminPassword) {
-        window.location.href = "../adm/index.html";
-      } else {
-        window.location.href = "../index.html";
-      }
-    });
-  });

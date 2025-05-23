@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
           tr.innerHTML = `
             <td>${user.id}</td>
             <td>${user.name}</td>
+            <td>${user.telefone}</td>
             <td>${user.email}</td>
           `;
           tbody.appendChild(tr);
@@ -87,6 +88,3 @@ document.querySelector("#userTable tbody").addEventListener("click", (e) => {
         img3.style.transform = `translateY(${scrollY * -0.2}px)`;
     });
 });
-
-  
-  
