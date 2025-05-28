@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agendamentos</title>
+
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet" />
+
+    <!-- Google Font moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <!-- ADIÇÃO -->
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="index.css" />
+
+    <!-- Locale em português -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/pt-br.js"></script>
+</head>
+
+<body>
+
+    <div id="navBarRoot">
+        <div id="menuBtn" class="menu-btn">
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+        </div>
+
+        <div id="navBackground">
+            <p onclick="window.location.href='../index.html'">INÍCIO</p>
+            <p onclick="window.location.href='../sale/index.html'">SERVIÇOS</p>
+            <p onclick="window.location.href='index.html'">AGENDA</p>
+
+        </div>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const navBackground = document.getElementById("navBackground");
+        let showMenu = false;
+
+        menuBtn.addEventListener("click", () => {
+            showMenu = !showMenu;
+
+            // Toggle class
+            menuBtn.classList.toggle("close", showMenu);
+            navBackground.classList.toggle("show", showMenu);
+
+            // Manage transition delays
+            navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+            navBackground.childNodes.forEach((el) => {
+                if (el.nodeType === 1) {
+                    el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+                }
+            });
+        });
+
+        function navigateTo(path) {
+            // This simulates navigation; replace with real logic if needed
+            alert(`Navigating to ${path}`);
+        }
+    </script>
+
+    <!-- Hero section moderna -->
+    <header class="hero"> <!-- ADIÇÃO -->
+        <div class="hero-content">
+            <h1>Agenda NovoStilo</h1>
+            <p>Confira os clientes já agendados!</p>
+        </div>
+    </header> <!-- ADIÇÃO -->
+
+    <!-- Container elegante -->
+    <main class="calendar-wrapper"> <!-- ADIÇÃO -->
+        <div id="calendar"></div>
+    </main> <!-- ADIÇÃO -->
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+
+    <div class="centralizar-horizontal">
+        <!-- Falta html de verificacao de agendamentos -->
+        <button class="botao-verificar" onclick="window.location.href='../'">Verificar Agendamentos</button>
+    </div>
+
+
+
+    <!-- JavaScript personalizado -->
+    <script src="calendar.js"></script>
+</body>
+
+</html>

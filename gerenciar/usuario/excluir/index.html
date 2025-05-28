@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Excluir Usuário</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+   <div id="navBarRoot">
+    <div class="menu-btn" id="menuBtn">
+      <div class="btn-line"></div>
+      <div class="btn-line"></div>
+      <div class="btn-line"></div>
+    </div>
+  </div>
+
+  <div id="navBackground">
+    <h1>MENU</h1>
+   <p onclick="window.location.href='../../../adm/index.html'">Início</p>
+    <p onclick="window.location.href='../listagem/index.html'">Gerenciar Usuários</p>
+    <p onclick="window.location.href='../../servico/listagem/index.html'">Gerenciar Serviços</p>
+    <p onclick="window.location.href='index.html'">DEVE FAZER: <br>  <br>Gerenciar Agendamentos</p>
+  </div>
+
+
+
+  <div class="container">
+    <h1>Excluir Usuário</h1>
+    <form id="deleteForm">
+      <label for="userSelect">Selecionar Usuário:</label>
+      <select id="userSelect"></select>
+
+      <button type="submit">Deletar</button>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
