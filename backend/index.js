@@ -27,7 +27,6 @@ const app = express();
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
 app.use(bodyParser.json());
-app.use("/uploads", express.static("uploads")); // Servindo uploads
 
 const SECRET_KEY = "chave_secreta";
 let pool;

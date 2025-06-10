@@ -1,35 +1,49 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const elements = document.querySelectorAll(".feedback-card")
-    const img1 = elements[0]
-    const img2 = elements[1]
-    const img3 = elements[2]
+    const saleGrid = document.getElementById("saleGrid");
 
-    const feedbacksSection = document.querySelector(".feedbacks");
+    async function loadServicos() {
+        try {
+            console.log("Buscando serviços...");
+            const response = await fetch("http://localhost:3000/servicos");
 
-    let sectionTop = 0;
-    let inView = false
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                sectionTop = window.scrollY;
-                inView=true
-                // Stop observing after first intersection
-                observer.unobserve(entry.target);
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar serviços: ${response.status}`);
             }
-        });
-    }, { threshold: 0 });
 
-    observer.observe(feedbacksSection);
+            const servicos = await response.json();
 
-    window.addEventListener('scroll', () => {
-        if(!inView){
-            return
+            console.log("Serviços recebidos:", servicos);
+
+            if (servicos.length === 0) {
+                saleGrid.innerHTML = "<p>Nenhum serviço encontrado.</p>";
+                return;
+            }
+
+            saleGrid.innerHTML = ""; // Limpa qualquer conteúdo anterior
+
+            servicos.forEach(servico => {
+                const card = document.createElement("div");
+                card.className = "card";
+
+                const imagePath = servico.imagem_path
+                    ? `http://localhost:3000${servico.imagem_path}`
+                    : "https://via.placeholder.com/300x250?text=Sem+Imagem";
+
+                card.innerHTML = `
+                    <img src="${imagePath}" alt="${servico.nome}" />
+                    <h2>${servico.nome}</h2>
+                    <p><strong>Descrição:</strong> ${servico.descricao || "Sem descrição"}</p>
+                    <p><strong>Preço:</strong> R$ ${parseFloat(servico.preco).toFixed(2)}</p>
+                    <p><strong>Duração:</strong> ${servico.duracao || 0} minutos</p>
+                `;
+
+                saleGrid.appendChild(card);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar serviços:", error);
+            saleGrid.innerHTML = "<p>Erro ao carregar serviços. Tente novamente mais tarde.</p>";
         }
-        const scrollY = window.scrollY - sectionTop;    
-        console.log(scrollY);
-        // Adjust these multipliers for different speeds
-        img1.style.transform = `translateY(${scrollY * -0.6}px)`;
-        img2.style.transform = `translateY(${scrollY * -0.4}px)`;
-        img3.style.transform = `translateY(${scrollY * -0.2}px)`;
-    });
+    }
+
+    loadServicos();
 });
