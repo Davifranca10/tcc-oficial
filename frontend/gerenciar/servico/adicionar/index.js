@@ -17,13 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("duracao", duracao);
 
     if (imagemInput.files.length > 0) {
-      formData.append("imagem_path", imagemInput.files[0]);
+      formData.append("imagem", imagemInput.files[0]); // <<== aqui corrigido
     }
 
     try {
       const response = await fetch("http://localhost:3000/servicos", {
         method: "POST",
-        body: formData,  // IMPORTANTE: não setar headers 'Content-Type' aqui!
+        body: formData, // importante: NÃO setar Content-Type manualmente
       });
 
       const resultado = await response.json();
@@ -41,28 +41,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// Código do menu (sem mudanças)
+const menuBtn = document.getElementById("menuBtn");
+const navBackground = document.getElementById("navBackground");
+let showMenu = false;
 
- const menuBtn = document.getElementById("menuBtn");
-  const navBackground = document.getElementById("navBackground");
-  let showMenu = false;
+menuBtn.addEventListener("click", () => {
+  showMenu = !showMenu;
 
-  menuBtn.addEventListener("click", () => {
-      showMenu = !showMenu;
+  // Toggle class
+  menuBtn.classList.toggle("close", showMenu);
+  navBackground.classList.toggle("show", showMenu);
 
-      // Toggle class
-      menuBtn.classList.toggle("close", showMenu);
-      navBackground.classList.toggle("show", showMenu);
-
-      // Manage transition delays
-      navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
-      navBackground.childNodes.forEach((el) => {
-          if (el.nodeType === 1) {
-              el.style.transitionDelay = showMenu ? "0.25s" : "0s";
-          }
-      });
+  // Manage transition delays
+  navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+  navBackground.childNodes.forEach((el) => {
+    if (el.nodeType === 1) {
+      el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+    }
   });
+});
 
-  function navigateTo(path) {
-      // This simulates navigation; replace with real logic if needed
-      alert(`Navigating to ${path}`);
-  }
+function navigateTo(path) {
+  alert(`Navigating to ${path}`);
+}
