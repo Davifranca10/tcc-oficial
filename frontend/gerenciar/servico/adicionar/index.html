@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gerenciar Serviços</title>
   <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
 
-   <div id="navBarRoot">
+  <div id="navBarRoot">
     <div class="menu-btn" id="menuBtn">
       <div class="btn-line"></div>
       <div class="btn-line"></div>
@@ -21,13 +23,13 @@
     <p onclick="window.location.href='../../../adm/index.html'">Início</p>
     <p onclick="window.location.href='../../usuario/listagem/index.html'">Gerenciar Usuários</p>
     <p onclick="window.location.href='../listagem/index.html'">Gerenciar Serviços</p>
-    <p onclick="window.location.href='index.html'">DEVE FAZER: <br>  <br>Gerenciar Agendamentos</p>
+    <p onclick="window.location.href='index.html'">DEVE FAZER: <br> <br>Gerenciar Agendamentos</p>
   </div>
 
 
   <div class="container">
     <h1>Serviços Cadastrados</h1>
-    
+
 
     <table>
       <thead>
@@ -61,6 +63,9 @@
           <label>Duração (min):</label>
           <input type="number" id="duracao" required>
 
+          <label>Imagem do Serviço:</label>
+          <input type="file" id="imagem" accept="image/*">
+
           <button type="submit">Salvar</button>
         </form>
       </div>
@@ -69,4 +74,5 @@
 
   <script src="index.js"></script>
 </body>
+
 </html>

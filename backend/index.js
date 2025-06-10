@@ -5,8 +5,24 @@ const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2/promise");
 
+/*Upload de Imagem*/ 
+const multer = require("multer");
+const path = require("path");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/sale-page");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+const upload = multer({ storage });
+/*Fim upload*/
+
 const app = express();
 app.use(cors());
+app.use("/sale-page", express.static("public/sale-page"));
 app.use(bodyParser.json());
 
 const SECRET_KEY = "chave_secreta";
@@ -44,9 +60,9 @@ const initDb = async () => {
       nome VARCHAR(100) NOT NULL,
       descricao TEXT,
       preco DECIMAL(10, 2) NOT NULL,
-      duracao INT
-    )
-  `);
+      duracao INT,
+      imagem_path VARCHAR(255)  
+    )`);
 
   // Create funcionarios table
   await connection.query(`
@@ -168,8 +184,9 @@ app.post("/agendamentos", async (req, res) => {
 });
 
 //Criar Serviço
-app.post("/servicos", async (req, res) => {
+app.post("/servicos", upload.single("imagem"), async (req, res) => {
   const { nome, descricao, preco, duracao } = req.body;
+  const imagem_path = req.file ? `/sale-page/${req.file.filename}` : null;
 
   if (!nome || !preco || !duracao) {
     return res.status(400).json({ message: "Campos obrigatórios: nome, preco e duracao." });
@@ -177,10 +194,10 @@ app.post("/servicos", async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO servicos (nome, descricao, preco, duracao) VALUES (?, ?, ?, ?)",
-      [nome, descricao || "", preco, duracao]
+      "INSERT INTO servicos (nome, descricao, preco, duracao, imagem_path) VALUES (?, ?, ?, ?, ?)",
+      [nome, descricao || "", preco, duracao, imagem_path]
     );
-    res.status(201).json({ message: "Serviço cadastrado com sucesso" });
+    res.status(201).json({ message: "Serviço cadastrado com sucesso", imagem: imagem_path });
   } catch (err) {
     console.error("Erro ao cadastrar serviço:", err);
     res.status(500).json({ message: "Erro interno do servidor" });
@@ -287,7 +304,7 @@ app.post('/disponibilidade', async (req, res) => {
 async function getDuracaoServico(id_servico) {
   const [rows] = await pool.query("SELECT duracao FROM servicos WHERE id = ?", [id_servico]);
   if (rows.length === 0) throw new Error("Serviço não encontrado");
-  return rows[0].duracao_em_minutos;
+  return rows[0].duracao;
 }
 
 //PegarAgendamentosPorDia
@@ -301,12 +318,19 @@ function gerarHorariosValidos(duracao, agendamentos) {
   const horaInicio = 8;
   const horaFim = 18;
 
-  const ocupados = agendamentos.map(a => a.horario.slice(0,5)); // 'HH:MM'
+  const ocupados = agendamentos.map(a => a.horario.slice(0, 5)); // ex: "14:00"
   const horariosDisponiveis = [];
 
   for (let h = horaInicio; h < horaFim; h++) {
     for (let m = 0; m < 60; m += duracao) {
+      const inicio = new Date(0, 0, 0, h, m);
+      const fim = new Date(inicio.getTime() + duracao * 60000); // duração em ms
+
+      const horaFimDecimal = fim.getHours() + fim.getMinutes() / 60;
+      if (horaFimDecimal > horaFim) continue;
+
       const hora = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      
       if (!ocupados.includes(hora)) {
         horariosDisponiveis.push(hora);
       }
@@ -315,5 +339,6 @@ function gerarHorariosValidos(duracao, agendamentos) {
 
   return horariosDisponiveis;
 }
+
 
 startServer();

@@ -8,14 +8,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const descricao = document.getElementById("descricao").value;
     const preco = parseFloat(document.getElementById("preco").value);
     const duracao = parseInt(document.getElementById("duracao").value);
+    const imagemInput = document.getElementById("imagem");
+
+    const formData = new FormData();
+    formData.append("nome", nome);
+    formData.append("descricao", descricao);
+    formData.append("preco", preco);
+    formData.append("duracao", duracao);
+
+    if (imagemInput.files.length > 0) {
+      formData.append("imagem_path", imagemInput.files[0]);
+    }
 
     try {
       const response = await fetch("http://localhost:3000/servicos", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ nome, descricao, preco, duracao })
+        body: formData,  // IMPORTANTE: não setar headers 'Content-Type' aqui!
       });
 
       const resultado = await response.json();
@@ -32,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
 
  const menuBtn = document.getElementById("menuBtn");
   const navBackground = document.getElementById("navBackground");
