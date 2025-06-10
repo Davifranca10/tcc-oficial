@@ -169,7 +169,7 @@ header p {
 .card h2 {
   font-size: 1.4rem;
   margin: 1rem 0 0.5rem;
-  color: #a65e44;
+  color: #cf9782;
 }
 
 .price {
@@ -247,8 +247,8 @@ a i {
 }
 
 a:hover {
-  color: #a70399;
-  background-color: #E4B055;
+  color: #353535;
+  background-color: #f3dfb3;
   transform: scale(1.2); /* Aumenta o tamanho quando hover */
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Efeito de brilho */
 }

@@ -30,11 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     : "https://via.placeholder.com/300x250?text=Sem+Imagem";
 
                 card.innerHTML = `
-                    <img src="${imagePath}" alt="${servico.nome}" />
-                    <h2>${servico.nome}</h2>
-                    <p><strong>Descrição:</strong> ${servico.descricao || "Sem descrição"}</p>
-                    <p><strong>Preço:</strong> R$ ${parseFloat(servico.preco).toFixed(2)}</p>
-                    <p><strong>Duração:</strong> ${servico.duracao || 0} minutos</p>
+                    <a href="manage/index.html?servico=${encodeURIComponent(servico.nome)}">
+                        <img src="${imagePath}" alt="${servico.nome}" />
+                        <h2>${servico.nome}</h2>
+                        <p><strong>Descrição:</strong> ${servico.descricao || "Sem descrição"}</p>
+                        <p><strong>Preço:</strong> R$ ${parseFloat(servico.preco).toFixed(2)}</p>
+                        <p><strong>Duração:</strong> ${servico.duracao || 0} minutos</p>
+                    </a>
                 `;
 
                 saleGrid.appendChild(card);

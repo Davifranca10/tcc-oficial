@@ -122,6 +122,30 @@
   button:hover {
     background-color: #0097e6;
   }
+
+ /* Container da imagem - centralizado */
+.image-preview-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* Estilo da imagem */
+#previewImagem {
+  width: 300px;
+  max-width: 90%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  object-fit: cover;
+}
+
+/* Zoom suave no hover */
+#previewImagem:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
   
   @media (max-width: 768px) {
     .sidebar {
