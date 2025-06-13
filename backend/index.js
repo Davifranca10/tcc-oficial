@@ -214,6 +214,8 @@ const startServer = async () => {
     }
   });
 
+
+
   app.put("/clients/:id", async (req, res) => {
     const { id } = req.params;
     const { name, telefone, email, password } = req.body;
@@ -253,6 +255,33 @@ const startServer = async () => {
       res.json(horariosPossiveis);
     } catch (err) {
       console.error("Erro na rota de disponibilidade:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
+
+  // Dentro da função startServer()
+  app.put("/servicos/:id", upload.single("imagem"), async (req, res) => {
+    const { id } = req.params;
+    const { nome, descricao, preco, duracao } = req.body;
+
+    let imagem_path = req.body.imagem_path; // mantém a antiga se não vier nova
+    if (req.file) {
+      imagem_path = `/uploads/${req.file.filename}`;
+    }
+
+    try {
+      const [result] = await pool.query(
+        "UPDATE servicos SET nome = ?, descricao = ?, preco = ?, duracao = ?, imagem_path = ? WHERE id = ?",
+        [nome, descricao || "", preco, duracao, imagem_path, id]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Serviço não encontrado" });
+      }
+
+      res.json({ message: "Serviço atualizado com sucesso!" });
+    } catch (err) {
+      console.error("Erro ao atualizar serviço:", err);
       res.status(500).json({ message: "Erro interno no servidor" });
     }
   });

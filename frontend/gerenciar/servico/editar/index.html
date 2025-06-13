@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Serviço</title>
+    <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+    <!-- Menu Hamburguer -->
+    <div id="navBarRoot">
+        <div class="menu-btn" id="menuBtn">
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+            <div class="btn-line"></div>
+        </div>
+    </div>
+
+    <div id="navBackground">
+        <h1>MENU</h1>
+        <p onclick="window.location.href='../../../adm/index.html'">Início</p>
+        <p onclick="window.location.href='../listagem/index.html'">Gerenciar Usuários</p>
+        <p onclick="window.location.href='../../servico/listagem/index.html'">Gerenciar Serviços</p>
+        <p onclick="window.location.href='index.html'">Gerenciar Agendamentos</p>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const navBackground = document.getElementById("navBackground");
+        let showMenu = false;
+
+        menuBtn.addEventListener("click", () => {
+            showMenu = !showMenu;
+            menuBtn.classList.toggle("close", showMenu);
+            navBackground.classList.toggle("show", showMenu);
+            navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+            navBackground.childNodes.forEach((el) => {
+                if (el.nodeType === 1) {
+                    el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+                }
+            });
+        });
+    </script>
+
+    <!-- Formulário de Edição -->
+    <div class="container">
+        <h1>Editar Serviço</h1>
+        <form id="editForm">
+
+            <label for="serviceSelect">Selecionar Serviço:</label>
+            <select id="serviceSelect"></select>
+
+            <label for="nome">Nome do Serviço:</label>
+            <input type="text" id="nome" name="nome" required />
+
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" name="descricao" />
+
+            <label for="preco">Preço (R$):</label>
+            <input type="number" step="0.01" id="preco" name="preco" required />
+
+            <label for="duracao">Duração (minutos):</label>
+            <input type="number" id="duracao" name="duracao" required />
+
+            <label for="imagem">Nova Imagem (opcional):</label>
+            <input type="file" id="imagem" name="imagem" accept="image/*" />
+
+            <img id="previewImagem" src="" alt="Prévia da imagem"
+                style="max-width: 300px; margin-top: 1rem; display: none; border-radius: 8px;" />
+
+
+            <button type="submit">Salvar Alterações</button>
+
+
+        </form>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+</html>

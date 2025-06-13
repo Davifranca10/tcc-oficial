@@ -19,6 +19,12 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* Linha selecionada */
+#userTable tr.selected {
+  background-color: #d0ebff;
+  font-weight: bold;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
