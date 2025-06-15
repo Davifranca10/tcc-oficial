@@ -4,11 +4,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2/promise");
-
 /* Upload de Imagem */
 const multer = require("multer");
 const path = require("path");
 
+// Configuração do Multer para upload de imagem
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads");
@@ -20,8 +20,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-
-
 /* Inicialização do App */
 const app = express();
 app.use(cors());
@@ -30,8 +28,6 @@ app.use(bodyParser.json());
 
 const SECRET_KEY = "chave_secreta";
 let pool;
-
-
 
 /* Criação do Banco e Tabelas */
 const initDb = async () => {
@@ -55,17 +51,6 @@ const initDb = async () => {
     )
   `);
 
-  // Tabela servicos
-  await connection.query(`
-    CREATE TABLE IF NOT EXISTS servicos (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      nome VARCHAR(100) NOT NULL,
-      descricao TEXT,
-      preco DECIMAL(10, 2) NOT NULL,
-      duracao INT,
-      imagem_path VARCHAR(255)
-    )`);
-
   // Tabela funcionarios
   await connection.query(`
     CREATE TABLE IF NOT EXISTS funcionarios (
@@ -77,6 +62,19 @@ const initDb = async () => {
       passwordHash VARCHAR(255) NOT NULL
     )
   `);
+
+  // Tabela servicos - AGORA COM id_funcionario
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS servicos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nome VARCHAR(100) NOT NULL,
+      descricao TEXT,
+      preco DECIMAL(10, 2) NOT NULL,
+      duracao INT,
+      id_funcionario INT,
+      imagem_path VARCHAR(255),
+      FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id)
+    )`);
 
   // Tabela agendamentos
   await connection.query(`
@@ -115,7 +113,6 @@ const startServer = async () => {
     try {
       const [existing] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
       if (existing.length > 0) return res.status(400).json({ message: "Usuário já existe" });
-
       const passwordHash = await bcrypt.hash(password, 10);
       await pool.query(
         "INSERT INTO users (name, telefone, email, passwordHash) VALUES (?, ?, ?, ?)",
@@ -134,10 +131,8 @@ const startServer = async () => {
       const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
       const user = rows[0];
       if (!user) return res.status(400).json({ message: "Credenciais inválidas" });
-
       const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
       if (!isPasswordValid) return res.status(400).json({ message: "Credenciais inválidas" });
-
       const token = jwt.sign({ email: user.email, name: user.name }, SECRET_KEY, { expiresIn: "1h" });
       res.json({ token });
     } catch (err) {
@@ -147,9 +142,15 @@ const startServer = async () => {
   });
 
   /* Rotas de Serviços */
+
+  // Listar todos os serviços com nome do funcionário responsável
   app.get("/servicos", async (req, res) => {
     try {
-      const [rows] = await pool.query("SELECT * FROM servicos");
+      const [rows] = await pool.query(`
+      SELECT s.*, f.nome AS nome_funcionario 
+      FROM servicos s
+      LEFT JOIN funcionarios f ON s.id_funcionario = f.id
+    `);
       res.json(rows);
     } catch (err) {
       console.error("Erro ao buscar serviços:", err.message);
@@ -157,22 +158,57 @@ const startServer = async () => {
     }
   });
 
+  // Cadastrar serviço com id_funcionario
   app.post("/servicos", upload.single("imagem"), async (req, res) => {
-    const { nome, descricao, preco, duracao } = req.body;
+    const { nome, descricao, preco, duracao, id_funcionario } = req.body;
     const imagem_path = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!nome || !preco || !duracao) {
-      return res.status(400).json({ message: "Campos obrigatórios: nome, preco e duracao." });
+    if (!nome || !preco || !duracao || !id_funcionario) {
+      return res.status(400).json({
+        message: "Campos obrigatórios: nome, preco, duracao e id_funcionario."
+      });
     }
 
     try {
       await pool.query(
-        "INSERT INTO servicos (nome, descricao, preco, duracao, imagem_path) VALUES (?, ?, ?, ?, ?)",
-        [nome, descricao || "", preco, duracao, imagem_path]
+        "INSERT INTO servicos (nome, descricao, preco, duracao, id_funcionario, imagem_path) VALUES (?, ?, ?, ?, ?, ?)",
+        [nome, descricao || "", preco, duracao, id_funcionario || null, imagem_path]
       );
       res.status(201).json({ message: "Serviço cadastrado com sucesso", imagem: imagem_path });
     } catch (err) {
       console.error("Erro ao cadastrar serviço:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
+
+  // Editar serviço com id_funcionario
+  app.put("/servicos/:id", upload.single("imagem"), async (req, res) => {
+    const { id } = req.params;
+    const { nome, descricao, preco, duracao, id_funcionario } = req.body;
+    let imagem_path = req.body.imagem_path;
+    if (req.file) {
+      imagem_path = `/uploads/${req.file.filename}`;
+    }
+
+    if (!nome || !preco || !duracao || !id_funcionario) {
+      return res.status(400).json({
+        message: "Campos obrigatórios: nome, preco, duracao e id_funcionario."
+      });
+    }
+
+    try {
+      const [result] = await pool.query(
+        "UPDATE servicos SET nome = ?, descricao = ?, preco = ?, duracao = ?, id_funcionario = ?, imagem_path = ? WHERE id = ?",
+        [nome, descricao || "", preco, duracao, id_funcionario, imagem_path, id]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Serviço não encontrado" });
+      }
+
+      res.json({ message: "Serviço atualizado com sucesso!" });
+    } catch (err) {
+      console.error("Erro ao atualizar serviço:", err.message);
       res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
@@ -214,8 +250,6 @@ const startServer = async () => {
     }
   });
 
-
-
   app.put("/clients/:id", async (req, res) => {
     const { id } = req.params;
     const { name, telefone, email, password } = req.body;
@@ -245,6 +279,16 @@ const startServer = async () => {
     }
   });
 
+  app.get("/funcionarios", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT id, nome FROM funcionarios");
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar funcionários:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
   /* Rota de Disponibilidade */
   app.post("/disponibilidade", async (req, res) => {
     const { data, id_servico } = req.body;
@@ -255,33 +299,6 @@ const startServer = async () => {
       res.json(horariosPossiveis);
     } catch (err) {
       console.error("Erro na rota de disponibilidade:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
-  });
-
-  // Dentro da função startServer()
-  app.put("/servicos/:id", upload.single("imagem"), async (req, res) => {
-    const { id } = req.params;
-    const { nome, descricao, preco, duracao } = req.body;
-
-    let imagem_path = req.body.imagem_path; // mantém a antiga se não vier nova
-    if (req.file) {
-      imagem_path = `/uploads/${req.file.filename}`;
-    }
-
-    try {
-      const [result] = await pool.query(
-        "UPDATE servicos SET nome = ?, descricao = ?, preco = ?, duracao = ?, imagem_path = ? WHERE id = ?",
-        [nome, descricao || "", preco, duracao, imagem_path, id]
-      );
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Serviço não encontrado" });
-      }
-
-      res.json({ message: "Serviço atualizado com sucesso!" });
-    } catch (err) {
-      console.error("Erro ao atualizar serviço:", err);
       res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
@@ -309,6 +326,7 @@ const startServer = async () => {
         const fim = new Date(inicio.getTime() + duracao * 60000); // duração em ms
         const horaFimDecimal = fim.getHours() + fim.getMinutes() / 60;
         if (horaFimDecimal > horaFim) continue;
+
         const hora = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
         if (!ocupados.includes(hora)) {
           horariosDisponiveis.push(hora);
@@ -331,4 +349,3 @@ const startServer = async () => {
 };
 
 startServer();
-

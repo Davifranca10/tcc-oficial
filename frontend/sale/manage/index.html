@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="index.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 </head>
+
 <body>
 
   <!-- Menu Hamburguer -->
@@ -21,8 +23,8 @@
     <h2>Menu</h2>
     <a href="../../index.html">Início</a>
     <a href="../index.html">Serviços</a>
-    <a href="../../agend/index.html">Agenda</a>    
-    
+    <a href="../../agend/index.html">Agenda</a>
+
 
   </div>
 
@@ -31,14 +33,15 @@
   <div class="main">
 
     <!-- Imagem do serviço -->
-  <div class="image-preview-container">
-    <img id="previewImagem" src="https://via.placeholder.com/300x250?text=Selecione+um+serviço" alt="Imagem do serviço" />
-  </div>
+    <div class="image-preview-container">
+      <img id="previewImagem" src="https://placehold.co/300x250?text=Selecione+um+serviço"
+        alt="Imagem do serviço" />
+    </div>
 
 
     <form id="form-agendamento" method="POST">
       <h1>Agendar Serviço</h1>
-      
+
       <input type="hidden" name="id_cliente" value="1">
 
       <label>Serviço</label>
@@ -73,11 +76,11 @@
         <option value="17:00">17:00</option>
       </select>
 
-      <label>Funcionário</label>
-      <select name="id_funcionario" required>
-        <option value="1">João</option>
-        <option value="2">Maria</option>
-      </select>
+      <div id="infoFuncionario" style="margin-top: 15px; font-weight: bold;">
+        Funcionário(a): <span id="nomeFuncionario">-</span>
+      </div>
+      <!-- Campo oculto para enviar o ID do funcionário -->
+      <input type="hidden" name="id_funcionario" id="idFuncionario" />
 
       <button type="submit">Confirmar</button>
     </form>
@@ -85,4 +88,5 @@
 
   <script src="index.js"></script>
 </body>
+
 </html>

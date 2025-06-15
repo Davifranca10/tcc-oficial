@@ -8,7 +8,8 @@
 </head>
 <body>
 
-   <div id="navBarRoot">
+  <!-- Menu Hamburguer -->
+  <div id="navBarRoot">
     <div class="menu-btn" id="menuBtn">
       <div class="btn-line"></div>
       <div class="btn-line"></div>
@@ -21,13 +22,31 @@
     <p onclick="window.location.href='../../../adm/index.html'">Início</p>
     <p onclick="window.location.href='../../usuario/listagem/index.html'">Gerenciar Usuários</p>
     <p onclick="window.location.href='index.html'">Gerenciar Serviços</p>
-    <p onclick="window.location.href='index.html'">DEVE FAZER: <br>  <br>Gerenciar Agendamentos</p>
+    <p onclick="window.location.href='index.html'">Gerenciar Agendamentos</p>
   </div>
 
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const navBackground = document.getElementById("navBackground");
+    let showMenu = false;
 
+    menuBtn.addEventListener("click", () => {
+      showMenu = !showMenu;
+      menuBtn.classList.toggle("close", showMenu);
+      navBackground.classList.toggle("show", showMenu);
+      navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+      navBackground.childNodes.forEach((el) => {
+        if (el.nodeType === 1) {
+          el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+        }
+      });
+    });
+  </script>
+
+  <!-- Conteúdo Principal -->
   <div class="container">
     <h1>Serviços Cadastrados</h1>
-    <button id="addServiceBtn" class="add-service-btn">+</button>
+    <button id="addServiceBtn" class="add-service-btn" onclick="window.location.href='../cadastro/index.html'">+</button>
 
     <table id="serviceTable">
       <thead>
@@ -36,7 +55,8 @@
           <th>Nome</th>
           <th>Descrição</th>
           <th>Preço</th>
-          <th>Valor</th>
+          <th>Duração (min)</th>
+          <th>Funcionário</th>
         </tr>
       </thead>
       <tbody>
@@ -45,13 +65,12 @@
     </table>
 
     <div class="buttons">
-        <a href="../editar/index.html?id=ID_DO_SERVIÇO" id="editLink">
-            <button>Editar</button>
-        </a>    
-
-        <a href="../excluir/index.html">
-            <button>Deletar</button>
-        </a>          
+      <a href="../editar/index.html?id=ID_DO_SERVIÇO" id="editLink">
+        <button>Editar</button>
+      </a>
+      <a href="../excluir/index.html">
+        <button>Deletar</button>
+      </a>
     </div>
   </div>
 
