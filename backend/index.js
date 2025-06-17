@@ -63,7 +63,7 @@ const initDb = async () => {
     )
   `);
 
-  // Tabela servicos - AGORA COM id_funcionario
+  // Tabela servicos
   await connection.query(`
     CREATE TABLE IF NOT EXISTS servicos (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -107,7 +107,11 @@ const startServer = async () => {
     database: "auth_demo"
   });
 
-  /* Rotas de Registro e Login */
+
+
+  //USUARIOS/CLIENTES
+
+  //cadastro de cliente/usuario
   app.post("/register", async (req, res) => {
     const { name, email, telefone, password } = req.body;
     try {
@@ -125,6 +129,7 @@ const startServer = async () => {
     }
   });
 
+  //login de usuarios
   app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -141,7 +146,51 @@ const startServer = async () => {
     }
   });
 
-  /* Rotas de Serviços */
+  //get de usuarios
+  app.get("/clients", async (req, res) => {
+    try {
+      const [users] = await pool.query("SELECT id, name, telefone, email FROM users");
+      res.json(users);
+    } catch (err) {
+      console.error("Erro ao listar usuários:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
+
+  //editar de usuarios
+  app.put("/clients/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name, telefone, email, password } = req.body;
+    try {
+      const passwordHash = await bcrypt.hash(password, 10);
+      const [result] = await pool.query(
+        "UPDATE users SET name = ?, telefone = ?, email = ?, passwordHash = ? WHERE id = ?",
+        [name, telefone, email, passwordHash, id]
+      );
+      if (result.affectedRows === 0) return res.status(404).json({ message: "Usuário não encontrado" });
+      res.status(200).json({ message: "Usuário atualizado com sucesso" });
+    } catch (err) {
+      console.error("Erro ao atualizar usuário:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
+
+  //deletar de usuarios
+  app.delete("/clients/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
+      if (result.affectedRows === 0) return res.status(404).json({ message: "Usuário não encontrado" });
+      res.status(200).json({ message: "Usuário deletado com sucesso" });
+    } catch (err) {
+      console.error("Erro ao deletar usuário:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
+
+
+
+  //SERVIÇOS
 
   // Listar todos os serviços com nome do funcionário responsável
   app.get("/servicos", async (req, res) => {
@@ -158,7 +207,7 @@ const startServer = async () => {
     }
   });
 
-  // Cadastrar serviço com id_funcionario
+  // Cadastrar serviço
   app.post("/servicos", upload.single("imagem"), async (req, res) => {
     const { nome, descricao, preco, duracao, id_funcionario } = req.body;
     const imagem_path = req.file ? `/uploads/${req.file.filename}` : null;
@@ -181,7 +230,7 @@ const startServer = async () => {
     }
   });
 
-  // Editar serviço com id_funcionario
+  // Editar serviço
   app.put("/servicos/:id", upload.single("imagem"), async (req, res) => {
     const { id } = req.params;
     const { nome, descricao, preco, duracao, id_funcionario } = req.body;
@@ -239,46 +288,34 @@ const startServer = async () => {
     }
   });
 
-  /* Rotas de Usuários */
-  app.get("/clients", async (req, res) => {
-    try {
-      const [users] = await pool.query("SELECT id, name, telefone, email FROM users");
-      res.json(users);
-    } catch (err) {
-      console.error("Erro ao listar usuários:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
+  //cadastro de funcionarios
+  app.post("/funcionarios", async (req, res) => {
+    const { nome, especialidade, telefone, email, password } = req.body;
+  
+    if (!nome || !telefone || !email || !password) {
+      return res.status(400).json({ message: "Campos obrigatórios: nome, telefone, email, senha" });
     }
-  });
-
-  app.put("/clients/:id", async (req, res) => {
-    const { id } = req.params;
-    const { name, telefone, email, password } = req.body;
+  
     try {
+      const [existing] = await pool.query("SELECT * FROM funcionarios WHERE email = ?", [email]);
+      if (existing.length > 0) {
+        return res.status(400).json({ message: "Funcionário já existe" });
+      }
+  
       const passwordHash = await bcrypt.hash(password, 10);
-      const [result] = await pool.query(
-        "UPDATE users SET name = ?, telefone = ?, email = ?, passwordHash = ? WHERE id = ?",
-        [name, telefone, email, passwordHash, id]
+      await pool.query(
+        "INSERT INTO funcionarios (nome, especialidade, telefone, email, passwordHash) VALUES (?, ?, ?, ?, ?)",
+        [nome, especialidade || "", telefone, email, passwordHash]
       );
-      if (result.affectedRows === 0) return res.status(404).json({ message: "Usuário não encontrado" });
-      res.status(200).json({ message: "Usuário atualizado com sucesso" });
+  
+      res.status(201).json({ message: "Funcionário cadastrado com sucesso" });
     } catch (err) {
-      console.error("Erro ao atualizar usuário:", err.message);
+      console.error("Erro ao cadastrar funcionário:", err.message);
       res.status(500).json({ message: "Erro interno no servidor" });
     }
-  });
-
-  app.delete("/clients/:id", async (req, res) => {
-    const { id } = req.params;
-    try {
-      const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
-      if (result.affectedRows === 0) return res.status(404).json({ message: "Usuário não encontrado" });
-      res.status(200).json({ message: "Usuário deletado com sucesso" });
-    } catch (err) {
-      console.error("Erro ao deletar usuário:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
-  });
-
+  });  
+  
+  //get de funcionarios
   app.get("/funcionarios", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT id, nome FROM funcionarios");
