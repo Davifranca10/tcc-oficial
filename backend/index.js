@@ -288,6 +288,10 @@ const startServer = async () => {
     }
   });
 
+
+
+  //FUNCIONARIOS
+
   //cadastro de funcionarios
   app.post("/funcionarios", async (req, res) => {
     const { nome, especialidade, telefone, email, password } = req.body;
@@ -318,13 +322,57 @@ const startServer = async () => {
   //get de funcionarios
   app.get("/funcionarios", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT id, nome FROM funcionarios");
+    const [rows] = await pool.query("SELECT id, nome, especialidade, telefone, email FROM funcionarios");
     res.json(rows);
   } catch (err) {
     console.error("Erro ao buscar funcionários:", err.message);
     res.status(500).json({ message: "Erro interno no servidor" });
   }
 });
+
+//editar de funcionarios
+app.put("/funcionarios/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nome, especialidade, telefone, email, password } = req.body;
+
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const [result] = await pool.query(
+      "UPDATE funcionarios SET nome = ?, especialidade = ?, telefone = ?, email = ?, passwordHash = ? WHERE id = ?",
+      [nome, especialidade || "", telefone, email, passwordHash, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Funcionário não encontrado" });
+    }
+
+    res.status(200).json({ message: "Funcionário atualizado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao atualizar funcionário:", err.message);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+//excluir de funcionarios
+app.delete("/funcionarios/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await pool.query("DELETE FROM funcionarios WHERE id = ?", [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Funcionário não encontrado" });
+    }
+
+    res.status(200).json({ message: "Funcionário deletado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao deletar funcionário:", err.message);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+});
+
+
 
   /* Rota de Disponibilidade */
   app.post("/disponibilidade", async (req, res) => {
