@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <script src="index.js" defer></script>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <title>Salão NovoStilo</title>
 </head>
@@ -27,7 +27,7 @@
                     <p onclick="window.location.href='index.html'">INÍCIO</p>
                     <p onclick="window.location.href='sale/index.html'">SERVIÇOS</p>
                     <p onclick="window.location.href='agend/index.html'">AGENDA</p>
-                    
+
                 </div>
             </header>
         </div>
@@ -60,7 +60,13 @@
         </script>
 
         <div id="landing">
-            <img src="./public/home-page/imagem-inicio.png">
+
+            <picture>
+                <source srcset="public/home-page/imagem-inicio-desktop.png" media="(min-width: 768px)">
+                <img src="./public/home-page/imagem-inicio.png">
+            </picture>
+
+
             <div>
                 <a href="./sale/index.html">
                     <h1>NOVO STILO</h1>
@@ -69,8 +75,8 @@
                 <div class="cadastro-container">
                     <p>Você já tem cadastro?</p>
                     <a href="login/index.html" class="btn-cadastrar"><span>Cadastrar</span></a>
-                  </div>
-                  
+                </div>
+
 
             </div>
         </div>
@@ -80,7 +86,10 @@
 
         <!-- Primeira imagem -->
         <div class="blond-hair">
-            <img src="./public/home-page/loira.png" alt="loira">
+            <picture>
+                <source srcset="public/home-page/loira-desktop.png" media="(min-width: 768px)">
+                <img src="./public/home-page/loira.png" alt="loira">
+            </picture>
             <div class="text">HAIRCARE</div>
             <div class="complements">
                 <p>Mechas tom pérola</p>
@@ -89,7 +98,10 @@
 
         <!-- Segunda imagem -->
         <div class="morena">
+             <picture>
+                <source srcset="public/home-page/morena-desktop.png" media="(min-width: 768px)">
             <img src="./public/home-page/morena.png" alt="Haircare">
+             </picture>
             <div class="text">HAIRCARE</div>
             <div class="complements">
                 <p>Morena iluminada</p>
@@ -98,7 +110,10 @@
 
         <!-- Terceira imagem -->
         <div class="penteado">
-            <img src="./public/home-page/penteado.png" alt="Penteados">
+            <picture>
+                <source srcset="public/home-page/penteado-desktop.png" media="(min-width: 768px)">
+                <img src="./public/home-page/penteado.png" alt="Penteados">
+            </picture>
             <div class="text">PENTEADOS</div>
             <div class="complements">
                 <p>Penteados diversos</p>
@@ -198,24 +213,25 @@
                     <h4>Sobre Nós</h4>
                     <ul>
                         <li><a href="sale/index.html"> Nossos serviços </a></li>
-                        <li><a href="https://www.google.com/maps/place/Sal%C3%A3o+de+beleza+Camila+Fran%C3%A7a+novo+stilo/@-27.063589,-49.5223108,17z/data=!3m1!4b1!4m6!3m5!1s0x94dfaf7688c6a775:0xf3c9b62652da76c3!8m2!3d-27.063589!4d-49.5197359!16s%2Fg%2F11rwlg85rg?entry=ttu" target="_blank">Endereço</a>x</li>
+                        <li><a href="https://www.google.com/maps/place/Sal%C3%A3o+de+beleza+Camila+Fran%C3%A7a+novo+stilo/@-27.063589,-49.5223108,17z/data=!3m1!4b1!4m6!3m5!1s0x94dfaf7688c6a775:0xf3c9b62652da76c3!8m2!3d-27.063589!4d-49.5197359!16s%2Fg%2F11rwlg85rg?entry=ttu"
+                                target="_blank">Endereço</a>x</li>
                     </ul>
                 </div>
 
                 <div class="footer-col">
                     <h4>Cadastre já!</h4>
                     <div class="form-sub">
-                        
 
-                        
+
+
                         <form>
 
                             <button><a href="./login/index.html">Cadastrar</a></button>
                         </form>
-                    
+
                     </div>
 
-                    
+
 
                     <div class="medias-socias">
                         <a href="#"> <i class="fab fa-facebook-f"></i> </a>
@@ -229,7 +245,7 @@
             </div>
 
         </div>
-        
+
     </footer>
 </body>
 
