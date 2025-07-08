@@ -1,3 +1,11 @@
+// Menu interativo
+const menuBtn = document.getElementById('menuBtn');
+const navBg = document.getElementById('navBackground');
+
+menuBtn.addEventListener('click', () => {
+    menuBtn.classList.toggle('close');
+    navBg.classList.toggle('show');
+});
 window.addEventListener("DOMContentLoaded", async () => {
   try {
     const response = await fetch("http://localhost:3000/funcionarios");

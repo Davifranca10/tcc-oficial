@@ -598,7 +598,6 @@ b::after {
     object-fit: cover;
 }
 
-/* 🔥 CAMADA DE GRADIENTE NA PARTE DE BAIXO */
 .location .gradient-overlay {
     position: absolute;
     bottom: 0;

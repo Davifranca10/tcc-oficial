@@ -7,6 +7,24 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <div id="navBarRoot">
+    <div class="menu-btn" id="menuBtn">
+      <div class="btn-line"></div>
+      <div class="btn-line"></div>
+      <div class="btn-line"></div>
+    </div>
+  </div>
+
+  <div id="navBackground">
+    <h1>MENU</h1>
+    <p onclick="window.location.href='../../../index.html'">Início</p>
+    <p onclick="window.location.href='../../usuario/listagem/index.html'">Gerenciar Usuários</p>
+    <p onclick="window.location.href='../../servico/listagem/index.html'">Gerenciar Serviços</p>
+    <p onclick="window.location.href='index.html'">Gerenciar Funcionários</p>
+    <p onclick="window.location.href='index.html'">DEVE FAZER: <br>  <br>Gerenciar Agendamentos</p>
+  </div>
+
   <div class="container">
     <h1>Funcionários Cadastrados</h1>
     <table id="tabelaFuncionarios">
@@ -20,10 +38,16 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Preenchido via JS -->
       </tbody>
     </table>
   </div>
+
+   <div class="botoes-funcionarios">
+    <button onclick="window.location.href='../editar/index.html'">Editar</button>
+    <button onclick="window.location.href='../excluir/index.html'">Excluir</button>
+    <button onclick="window.location.href='../adicionar/index.html'">Adicionar</button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
