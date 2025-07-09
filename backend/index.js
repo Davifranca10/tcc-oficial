@@ -131,20 +131,29 @@ const startServer = async () => {
 
   //login de usuarios
   app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
-      const user = rows[0];
-      if (!user) return res.status(400).json({ message: "Credenciais inválidas" });
-      const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-      if (!isPasswordValid) return res.status(400).json({ message: "Credenciais inválidas" });
-      const token = jwt.sign({ email: user.email, name: user.name }, SECRET_KEY, { expiresIn: "1h" });
-      res.json({ token });
-    } catch (err) {
-      console.error("Erro no /login:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
+  const { email, password } = req.body;
+  try {
+    // Verifica se é o administrador
+    if (email === "admin@admin" && password === "admin") {
+      const token = jwt.sign({ email, role: "admin" }, SECRET_KEY, { expiresIn: "1h" });
+      return res.json({ token, role: "admin" }); // ✅ retorna JSON, não HTML!
     }
-  });
+
+    // Verifica se é um usuário comum
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    const user = rows[0];
+    if (!user) return res.status(400).json({ message: "Credenciais inválidas" });
+
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) return res.status(400).json({ message: "Credenciais inválidas" });
+
+    const token = jwt.sign({ email: user.email, name: user.name }, SECRET_KEY, { expiresIn: "1h" });
+    res.json({ token, role: "user" });
+  } catch (err) {
+    console.error("Erro no /login:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
 
   //get de usuarios
   app.get("/clients", async (req, res) => {
@@ -294,10 +303,10 @@ const startServer = async () => {
 
   //cadastro de funcionarios
   app.post("/funcionarios", async (req, res) => {
-    const { nome, especialidade, telefone, email, password } = req.body;
+    const { nome, especialidade, telefone, email} = req.body;
   
-    if (!nome || !telefone || !email || !password) {
-      return res.status(400).json({ message: "Campos obrigatórios: nome, telefone, email, senha" });
+    if (!nome || !telefone || !email) {
+      return res.status(400).json({ message: "Campos obrigatórios: nome, telefone, email" });
     }
   
     try {
@@ -306,10 +315,9 @@ const startServer = async () => {
         return res.status(400).json({ message: "Funcionário já existe" });
       }
   
-      const passwordHash = await bcrypt.hash(password, 10);
       await pool.query(
-        "INSERT INTO funcionarios (nome, especialidade, telefone, email, passwordHash) VALUES (?, ?, ?, ?, ?)",
-        [nome, especialidade || "", telefone, email, passwordHash]
+        "INSERT INTO funcionarios (nome, especialidade, telefone, email) VALUES (?, ?, ?, ?)",
+        [nome, especialidade || "", telefone, email]
       );
   
       res.status(201).json({ message: "Funcionário cadastrado com sucesso" });
@@ -333,14 +341,13 @@ const startServer = async () => {
 //editar de funcionarios
 app.put("/funcionarios/:id", async (req, res) => {
   const { id } = req.params;
-  const { nome, especialidade, telefone, email, password } = req.body;
+  const { nome, especialidade, telefone, email } = req.body;
 
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
 
     const [result] = await pool.query(
-      "UPDATE funcionarios SET nome = ?, especialidade = ?, telefone = ?, email = ?, passwordHash = ? WHERE id = ?",
-      [nome, especialidade || "", telefone, email, passwordHash, id]
+      "UPDATE funcionarios SET nome = ?, especialidade = ?, telefone = ?, email = ? WHERE id = ?",
+      [nome, especialidade || "", telefone, email, id]
     );
 
     if (result.affectedRows === 0) {
