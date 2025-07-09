@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listagem de Agendamentos</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="navBarRoot">
+    <div class="menu-btn" id="menuBtn">
+      <div class="btn-line"></div>
+      <div class="btn-line"></div>
+      <div class="btn-line"></div>
+    </div>
+  </div>
+
+  <div id="navBackground">
+    <h1>MENU</h1>
+    <p onclick="window.location.href='../../../adm/index.html'">Início</p>
+    <p onclick="window.location.href='../usuarios/listagem/index.html'">Gerenciar Usuários</p>
+    <p onclick="window.location.href='../../servico/listagem/index.html'">Gerenciar Serviços</p>
+    <p onclick="window.location.href='../../funcionario/listar/index.html'">Gerenciar Funcionários</p>
+    <p>Gerenciar Agendamentos</p>
+  </div>
+
+  <div class="container">
+    <h1>Agendamentos Cadastrados</h1>
+    <table id="scheduleTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Serviço</th>
+          <th>Funcionário</th>
+          <th>Data</th>
+          <th>Horário</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados inseridos dinamicamente via JS -->
+      </tbody>
+    </table>
+
+    <div class="buttons">
+      <button id="acceptBtn">Aceitar</button>
+      <button id="rejectBtn">Recusar</button>
+      <a href="../editar/index.html?id=ID_AGENDAMENTO" id="editLink">
+        <button id="editBtn">Editar</button>
+      </a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

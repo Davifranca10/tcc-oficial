@@ -374,6 +374,86 @@ app.delete("/funcionarios/:id", async (req, res) => {
 
 
 
+//AGENDAMENTO
+
+//get generico do agendamento
+app.get("/agendamentos", async (req, res) => {
+    try {
+        const [rows] = await pool.query("SELECT * FROM agendamentos");
+        res.json(rows);
+    } catch (err) {
+        console.error("Erro ao buscar agendamentos:", err.message);
+        res.status(500).json({ message: "Erro interno no servidor" });
+    }
+});
+
+//get especifico de agendamento
+app.get("/agendamentos/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await pool.query("SELECT * FROM agendamentos WHERE id = ?", [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "Agendamento não encontrado" });
+        }
+        res.json(rows[0]);
+    } catch (err) {
+        console.error("Erro ao buscar agendamento:", err.message);
+        res.status(500).json({ message: "Erro interno no servidor" });
+    }
+});
+
+//Cadastro de agendamento
+app.post("/agendamentos", async (req, res) => {
+    const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
+    try {
+        const status = "pendente";
+        await pool.query(
+            "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, ?)",
+            [id_cliente, id_servico, id_funcionario, data, horario, status]
+        );
+        res.status(201).json({ message: "Agendamento criado com sucesso" });
+    } catch (err) {
+        console.error("Erro ao criar agendamento:", err.message);
+        res.status(500).json({ message: "Erro interno no servidor" });
+    }
+});
+
+//Editar agendamento
+app.put("/agendamentos/:id", async (req, res) => {
+    const { id } = req.params;
+    const { id_cliente, id_servico, id_funcionario, data, horario, status } = req.body;
+    try {
+        const [result] = await pool.query(
+            "UPDATE agendamentos SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ? WHERE id = ?",
+            [id_cliente, id_servico, id_funcionario, data, horario, status, id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Agendamento não encontrado" });
+        }
+        res.json({ message: "Agendamento atualizado com sucesso!" });
+    } catch (err) {
+        console.error("Erro ao atualizar agendamento:", err.message);
+        res.status(500).json({ message: "Erro interno no servidor" });
+    }
+});
+
+//excluir agendamento
+app.delete("/agendamentos/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await pool.query("DELETE FROM agendamentos WHERE id = ?", [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Agendamento não encontrado" });
+        }
+        res.status(200).json({ message: "Agendamento deletado com sucesso" });
+    } catch (err) {
+        console.error("Erro ao deletar agendamento:", err.message);
+        res.status(500).json({ message: "Erro interno no servidor" });
+    }
+});
+
+
+
   /* Rota de Disponibilidade */
   app.post("/disponibilidade", async (req, res) => {
     const { data, id_servico } = req.body;
