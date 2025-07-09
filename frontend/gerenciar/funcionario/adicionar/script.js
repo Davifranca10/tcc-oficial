@@ -5,9 +5,8 @@ document.getElementById("formFuncionario").addEventListener("submit", async (e) 
     const especialidade = document.getElementById("especialidade").value.trim();
     const telefone = document.getElementById("telefone").value.trim();
     const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("senha").value.trim();
   
-    if (!nome || !telefone || !email || !password) {
+    if (!nome || !especialidade || !telefone || !email ) {
       return alert("Preencha todos os campos obrigatórios.");
     }
   
@@ -15,7 +14,7 @@ document.getElementById("formFuncionario").addEventListener("submit", async (e) 
       const res = await fetch("http://localhost:3000/funcionarios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, especialidade, telefone, email, password })
+        body: JSON.stringify({ nome, especialidade, telefone, email})
       });
   
       const data = await res.json();
