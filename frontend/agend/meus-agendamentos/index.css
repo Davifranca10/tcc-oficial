@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+b {
+    position: relative;
+    color: rgb(148, 97, 4);
+    font-weight: 400;
+}
+
+b::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 1.5em;
+    width: 12em;
+    z-index: -1;
+
+    clip-path: inset(0 100% 0 0);
+    background-color: rgb(255, 255, 255);
+    animation: landingTextAppear 1s cubic-bezier(.73, 0, .12, 1) forwards 1.25s;
+}
+
+@keyframes landingTextAppear {
+    0% {}
+
+    100% {
+
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+#root {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+    background-color: black;
+}
+
+
+#navBarRoot {
+    position: fixed;
+    height: 5vh;
+    width: 100%;
+    margin-bottom: -5vh;
+    z-index: 100;
+    animation: appear 3s ease-out;
+
+}
+
+
+
+.menu-btn {
+    position: absolute;
+    z-index: 3;
+    left: 25px;
+    top: 25px;
+    height: 20px;
+    cursor: pointer;
+    transition: all 0.5s ease-out;
+}
+
+/* Styling the hamburger lines */
+.menu-btn .btn-line {
+    width: 28px;
+    height: 3px;
+    margin: 0 0 5px 0;
+    background: white;
+    transition: all 0.5s ease-out;
+}
+
+/* Adding transform to the X */
+.menu-btn.close {
+    transform: rotate(180deg);
+}
+
+/* Styling the three lines to make it an X */
+.menu-btn.close .btn-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-btn.close .btn-line:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-btn.close .btn-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Styling the position of the menu icon */
+.menu {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    width: 100%;
+    opacity: 0.9;
+    visibility: hidden;
+}
+
+.menu.show {
+    visibility: visible;
+}
+
+#navBackground {
+    transition: 0.25s ease-in-out;
+    position: absolute;
+    background-color: rgb(20, 20, 20);
+    width: 0%;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 5vw;
+}
+
+#navBackground.show {
+    width: 100%;
+}
+
+#navBackground p {
+    cursor: pointer;
+    text-align: center;
+
+    letter-spacing: 3px;
+    text-indent: 5px;
+    font-size: 0.6em;
+    font-family: "Montserrat";
+    font-weight: 400;
+
+    color: #eea1a2;
+    transition-duration: 0.25s;
+    opacity: 0;
+    filter: brightness(0.5) blur(5px);
+    transform: translateY(1vh);
+}
+
+#navBackground.show p {
+    filter: brightness(1) blur(0px);
+    transform: translateY(0vh);
+    opacity: 1;
+}
+
+.meus-agendamentos {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #000000, #1a1a1a);
+  padding: 120px 20px 50px;
+  color: white;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.meus-agendamentos h2 {
+  font-size: 38px;
+  font-weight: 400;
+  color: #eea1a2;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+}
+
+#meusAgendamentosTable {
+  width: 90%;
+  max-width: 1000px;
+  border-collapse: collapse;
+  background-color: #111;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#meusAgendamentosTable thead {
+  background-color: #222;
+}
+
+#meusAgendamentosTable th,
+#meusAgendamentosTable td {
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 15px;
+}
+
+#meusAgendamentosTable th {
+  color: #ffd700;
+  font-weight: 500;
+  font-family: "Montserrat";
+  letter-spacing: 1px;
+}
+
+#meusAgendamentosTable tbody tr {
+  border-top: 1px solid #333;
+  transition: background 0.3s ease;
+}
+
+#meusAgendamentosTable tbody tr:hover {
+  background-color: #1c1c1c;
+}
+
+#meusAgendamentosTable td {
+  color: #ddd;
+}
+
+#meusAgendamentosTable td.status {
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Cores para os status */
+.status.aceito {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status.pendente {
+  background-color: #8b5657;
+  color: white;
+}
+
+.status.recusado {
+  background-color: #e53935;
+  color: white;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .meus-agendamentos h2 {
+    font-size: 28px;
+  }
+
+  #meusAgendamentosTable {
+    font-size: 14px;
+  }
+
+  #meusAgendamentosTable th,
+  #meusAgendamentosTable td {
+    padding: 12px 8px;
+  }
+}

@@ -8,39 +8,45 @@
 /* Fonte e cor de fundo agradáveis */
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(to bottom right, #f0cdce, #ffffff); /* ADIÇÃO */
-    color: #333;
+    background: linear-gradient(to bottom right, #1a1a1a, #2b2b2b);
+    color: #ddd;
 }
 
-/* Estilo moderno para o cabeçalho */
-.hero { /* ADIÇÃO */
-    background: linear-gradient(to right, #6e494a, #815050);
-    color: white;
+/* Cabeçalho elegante */
+.hero {
+    background: linear-gradient(to right, #4c2f30, #6e494a);
+    color: #f4c16d; /* Dourado suave */
     padding: 3rem 1rem;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
     border-bottom-left-radius: 2rem;
     border-bottom-right-radius: 2rem;
 }
+
 .hero h1 {
-    margin-top: 4vh;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 2.7rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    color: #f4c16d; /* Dourado */
 }
+
 .hero p {
     font-size: 1.1rem;
+    color: #eea1a2; /* Rosa claro */
     opacity: 0.9;
+    font-weight: 300;
 }
 
 /* Container do calendário com efeito glassmorphism */
-.calendar-wrapper { /* ADIÇÃO */
+.calendar-wrapper {
     max-width: 1000px;
     margin: -40px auto 60px auto;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(20, 20, 20, 0.85);
     backdrop-filter: blur(6px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     border-radius: 1.5rem;
+    color: #eee;
 }
 
 /* Estilo base do calendário */
@@ -50,7 +56,7 @@ body {
 
 /* Estilo dos eventos */
 .fc-event {
-    background-color: #c28a8b;
+    background-color: #c28a8b; /* Rosa esmaecido */
     color: white;
     border-radius: 6px;
     padding: 4px 6px;
@@ -58,14 +64,15 @@ body {
     font-weight: 600;
     transition: background 0.3s ease;
 }
+
 .fc-event:hover {
     background-color: #e97678;
     cursor: pointer;
 }
 
-/* Botões de navegação modernos */
+/* Botões de navegação modernos do FullCalendar */
 .fc-button {
-    background-color: #4CAF50;
+    background-color: #b18788; /* Rosa-dourado */
     color: white;
     border: none;
     padding: 6px 12px;
@@ -73,24 +80,20 @@ body {
     font-weight: bold;
     transition: background 0.3s ease;
 }
+
 .fc-button:hover {
-    background-color: #cc6667;
+    background-color: #9e6e6f; /* Rosa mais escuro */
 }
 
-
-
-
-#navBarRoot{
+/* Navbar */
+#navBarRoot {
     position: fixed;
     height: 5vh;
     width: 100%;
     margin-bottom: -5vh;
     z-index: 100;
     animation: appear 3s ease-out;
-
 }
-
-
 
 .menu-btn {
     position: absolute;
@@ -102,7 +105,7 @@ body {
     transition: all 0.5s ease-out;
 }
 
-/* Styling the hamburger lines */
+/* Hamburger lines */
 .menu-btn .btn-line {
     width: 28px;
     height: 3px;
@@ -111,12 +114,11 @@ body {
     transition: all 0.5s ease-out;
 }
 
-/* Adding transform to the X */
+/* Transform hamburger to X */
 .menu-btn.close {
     transform: rotate(180deg);
 }
 
-/* Styling the three lines to make it an X */
 .menu-btn.close .btn-line:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
 }
@@ -129,7 +131,7 @@ body {
     transform: rotate(-45deg) translate(7px, -6px);
 }
 
-/* Styling the position of the menu icon */
+/* Menu container */
 .menu {
     position: fixed;
     z-index: 2;
@@ -143,11 +145,12 @@ body {
     visibility: visible;
 }
 
-#navBackground{
+/* Navbar background */
+#navBackground {
     transition: 0.25s ease-in-out;
     position: absolute;
-    background-color: #B18788;
-    width: 0%;  
+    background-color: #b18788; /* rosa-dourado */
+    width: 0%;
     height: 70px;
 
     display: flex;
@@ -155,62 +158,74 @@ body {
     justify-content: center;
     column-gap: 5vw;
 }
-#navBackground.show{
+
+#navBackground.show {
     width: 100%;
 }
-#navBackground p{
+
+#navBackground p {
     cursor: pointer;
     text-align: center;
 
     letter-spacing: 3px;
     text-indent: 5px;
     font-size: 0.6em;
-    font-family: "Montserrat";
+    font-family: "Montserrat", sans-serif;
     font-weight: 400;
 
-    color:white;
+    color: white;
     transition-duration: 0.25s;
     opacity: 0;
     filter: brightness(0.5) blur(5px);
     transform: translateY(1vh);
 }
 
-#navBackground.show p{
-    filter: brightness(1) blur(0px);
+#navBackground.show p {
+    filter: brightness(1) blur(0);
     transform: translateY(0vh);
     opacity: 1;
 }
 
+/* Centralização botão */
 .centralizar-horizontal {
     text-align: center;
     margin-top: 40px;
-  }
-  
-  .meu-botao {
+}
+
+/* Botão personalizado */
+.meu-botao {
     padding: 12px 24px;
-    background-color: #2196F3;
+    background-color: #b18788; /* rosa-dourado */
     color: white;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
-  }
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
 
+.meu-botao:hover {
+    background-color: #9e6e6f;
+    transform: scale(1.05);
+}
+
+/* Botão verificar */
 .botao-verificar {
-    background-color: #dd9394;         /* Azul vibrante */
-    color: white;                      /* Texto branco */
+    background-color: #dd9394; /* rosa mais claro */
+    color: white;
     padding: 12px 24px;
     font-size: 16px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     font-weight: bold;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     justify-items: center;
-  }
-  
-  .botao-verificar:hover {
-    background-color: #cc8f90;         /* Azul mais escuro no hover */
+}
+
+.botao-verificar:hover {
+    background-color: #cc8f90; /* rosa escuro */
     transform: scale(1.05);
-  }
+}

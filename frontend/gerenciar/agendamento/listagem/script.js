@@ -21,31 +21,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      agendamentos.forEach(async agendamento => {
-        try {
-          const clienteRes = await fetch(`http://localhost:3000/clients/${agendamento.id_cliente}`);
-          const cliente = await clienteRes.json();
-
-          const servicoRes = await fetch(`http://localhost:3000/servicos/${agendamento.id_servico}`);
-          const servico = await servicoRes.json();
-
-          const funcionarioRes = await fetch(`http://localhost:3000/funcionarios/${agendamento.id_funcionario}`);
-          const funcionario = await funcionarioRes.json();
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${agendamento.id}</td>
-            <td>${cliente?.name || "Desconhecido"}</td>
-            <td>${servico?.nome || "Desconhecido"}</td>
-            <td>${funcionario?.nome || "Desconhecido"}</td>
-            <td>${new Date(agendamento.data).toLocaleDateString()}</td>
-            <td>${agendamento.horario}</td>
-            <td>${agendamento.status}</td>
-          `;
-          tbody.appendChild(tr);
-        } catch (err) {
-          console.error("Erro ao carregar dados relacionados:", err);
-        }
+      agendamentos.forEach(agendamento => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td>${agendamento.id}</td>
+        <td>${agendamento.cliente_nome || "Desconhecido"}</td>
+        <td>${agendamento.servico_nome || "Desconhecido"}</td>
+        <td>${agendamento.funcionario_nome || "Desconhecido"}</td>
+         <td>${new Date(agendamento.data).toLocaleDateString()}</td>
+        <td>${agendamento.horario}</td>
+       <td>${agendamento.status}</td>
+`;
+        tbody.appendChild(tr);
       });
     })
     .catch(err => {
@@ -64,35 +51,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Botão Aceitar
   const acceptBtn = document.getElementById("acceptBtn");
-  if (acceptBtn) {
-    acceptBtn.addEventListener("click", async () => {
-      const selected = document.querySelector("#scheduleTable tbody tr.selected");
-      if (!selected) {
-        alert("Selecione um agendamento primeiro.");
-        return;
+if (acceptBtn) {
+  acceptBtn.addEventListener("click", async () => {
+    const selected = document.querySelector("#scheduleTable tbody tr.selected");
+    if (!selected) {
+      alert("Selecione um agendamento primeiro.");
+      return;
+    }
+
+    const scheduleId = selected.children[0].textContent.trim();
+
+    try {
+      const response = await fetch(`http://localhost:3000/agendamentos/${scheduleId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "aceito" }) // só envia o status para atualizar
+      });
+
+      if (response.ok) {
+        alert("Status alterado para aceito!");
+        window.location.reload();
+      } else {
+        alert("Erro ao atualizar status.");
       }
-
-      const scheduleId = selected.children[0].textContent.trim();
-
-      try {
-        const response = await fetch(`http://localhost:3000/agendamentos/${scheduleId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "aceito" })
-        });
-
-        if (response.ok) {
-          alert("Status alterado para aceito!");
-          window.location.reload();
-        } else {
-          alert("Erro ao atualizar status.");
-        }
-      } catch (err) {
-        console.error("Erro ao aceitar agendamento:", err);
-        alert("Erro ao aceitar agendamento.");
-      }
-    });
-  }
+    } catch (err) {
+      console.error("Erro ao aceitar agendamento:", err);
+      alert("Erro ao aceitar agendamento.");
+    }
+  });
+}
 
   // Botão Recusar
   const rejectBtn = document.getElementById("rejectBtn");

@@ -34,6 +34,7 @@ registerForm.addEventListener("submit", async function (e) {
     });
 
     const data = await res.json();
+
     if (res.ok) {
       alert("Usuário cadastrado com sucesso!");
       window.location.href = "/frontend/index.html";
@@ -68,9 +69,17 @@ loginForm.addEventListener("submit", async function (e) {
     });
 
     const data = await res.json();
+
     if (res.ok && data.token) {
+      // Salva token JWT para autenticação
       localStorage.setItem("token", data.token);
 
+      // Salva id do cliente para uso posterior (ex: agendamento)
+      if (data.id) {
+        localStorage.setItem("id_cliente", data.id);
+      }
+
+      // Redireciona conforme o papel do usuário
       if (data.role === "admin") {
         window.location.href = "../adm/index.html";
       } else {
