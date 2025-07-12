@@ -29,15 +29,140 @@
 
   </div>
 
-  <div class="dashboard-content">
-    <div class="chart-box"></div>
-    <div class="chart-box"></div>
-    <div class="chart-box"></div>
+   <header class="hero">
+    <h1>Painel Administrativo</h1>
+    <p>Visualize as principais estatísticas do salão</p>
+  </header>
+
+  <main class="dashboard-container">
+
+    <!-- Visão Geral -->
+    <section class="cards-section">
+      <h2>Visão Geral</h2>
+      <div class="card-grid">
+        <div class="info-card">
+          <h3>Total de Usuários</h3>
+          <p id="totalUsuarios">...</p>
+        </div>
+        <div class="info-card">
+          <h3>Total de Serviços</h3>
+          <p id="totalServicos">...</p>
+        </div>
+        <div class="info-card">
+          <h3>Total de Funcionários</h3>
+          <p id="totalFuncionarios">...</p>
+        </div>
+        <div class="info-card">
+          <h3>Total de Agendamentos</h3>
+          <p id="totalAgendamentos">...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Status dos Agendamentos -->
+    <section class="cards-section">
+      <h2>Status dos Agendamentos</h2>
+      <div class="card-grid">
+        <div class="info-card pink">
+          <h3>Pendentes</h3>
+          <p id="agendPendentes">...</p>
+        </div>
+        <div class="info-card gold">
+          <h3>Cancelados</h3>
+          <p id="agendCancelados">...</p>
+        </div>
+        <div class="info-card green">
+          <h3>Confirmados</h3>
+          <p id="agendConfirmados">...</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Pedidos -->
+    <section class="cards-section">
+      <h2>Pedidos</h2>
+      <div class="card-grid">
+        <div class="info-card">
+          <h3>Pedidos no Mês</h3>
+          <p id="pedidosMes">...</p>
+        </div>
+        <div class="info-card">
+          <h3>Pedidos no Ano</h3>
+          <p id="pedidosAno">...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Serviços mais agendados -->
+    <section class="cards-section">
+      <h2>Serviços Mais Agendados</h2>
+      <ul class="list-box" id="servicosMaisAgendados">
+        <li>Carregando...</li>
+      </ul>
+    </section>
+
+    <!-- Clientes mais ativos -->
+    <section class="cards-section">
+      <h2>Clientes Mais Ativos</h2>
+      <ul class="list-box" id="clientesMaisAtivos">
+        <li>Carregando...</li>
+      </ul>
+    </section>
+
+    <!-- Comparativo de Crescimento -->
+<section class="cards-section">
+  <h2>Comparativo de Crescimento</h2>
+  <div class="card-grid">
+    <div class="info-card">
+      <h3>Agendamentos Mês Atual</h3>
+      <p id="agendamentosAtual">...</p>
+    </div>
+    <div class="info-card">
+      <h3>Agendamentos Mês Anterior</h3>
+      <p id="agendamentosAnterior">...</p>
+    </div>
+    <div class="info-card">
+      <h3>Crescimento (%)</h3>
+      <p id="crescimento">...</p>
+    </div>
   </div>
+</section>
 
-  <script src="admin.js">
+<!-- Lucro Estimado -->
+<section class="cards-section">
+  <h2>Lucro Estimado</h2>
+  <div class="card-grid">
+    <div class="info-card">
+      <h3>Mensal</h3>
+      <p id="lucroMensal">...</p>
+    </div>
+    <div class="info-card">
+      <h3>Anual</h3>
+      <p id="lucroAnual">...</p>
+    </div>
+  </div>
+</section>
 
-  </script>
+    <!-- Gráficos -->
+    <section class="cards-section">
+      <h2>Gráficos</h2>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h3>Agendamentos por Mês</h3>
+          <canvas id="graficoMensal"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>Lucro Mensal Estimado</h3>
+          <canvas id="graficoLucro"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="admin.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,7 @@
+/* Importação das fontes */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+/* Reset básico */
 * {
   margin: 0;
   padding: 0;
@@ -6,108 +10,199 @@
 
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
+  background: linear-gradient(to bottom right, #0f0f0f, #1a1a1a);
+  color: #fff;
 }
 
+/* Hero */
+.hero {
+  background: linear-gradient(to right, #2e1d1e, #4c2f30);
+  color: #f5f5f5;
+  padding: 3rem 1rem;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  padding-top: 100px; /* Isso move o título para baixo do menu fixo */
+
+}
+.hero h1 {
+  font-size: 2.7rem;
+  color: #f4c16d;
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+}
+.hero p {
+  font-size: 1.1rem;
+  color: #eea1a2;
+  opacity: 0.9;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.cards-section h2 {
+  font-size: 1.8rem;
+  color: #f4c16d;
+  margin-bottom: 20px;
+  border-left: 4px solid #eea1a2;
+  padding-left: 12px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.info-card {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+.info-card:hover {
+  transform: translateY(-5px);
+}
+.info-card h3 {
+  color: #eea1a2;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.info-card p {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #f4c16d;
+}
+
+/* Cores adicionais */
+.pink {
+  background-color: #4c2f30;
+}
+.gold {
+  background-color: #3b2a1a;
+}
+.green {
+  background-color: #1a3b2a;
+}
+
+/* Lista */
+.list-box {
+  list-style: none;
+  background: #1c1c1c;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: #ccc;
+}
+.list-box li {
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+}
+.list-box li:last-child {
+  border-bottom: none;
+}
+
+/* Gráficos */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+.chart-box {
+  background: #1c1c1c;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+.chart-box h3 {
+  margin-bottom: 15px;
+  color: #eea1a2;
+}
+
+/* Navbar básica */
 #navBarRoot {
   position: fixed;
-  top: 0;
+  height: 5vh;
   width: 100%;
-  height: 60px;
-  background-color: #1e1e1e;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.menu-btn {
-  position: relative;
-  z-index: 1100;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.btn-line {
-  width: 25px;
-  height: 3px;
-  background-color: white;
-  transition: all 0.3s ease;
-}
-
-.menu-btn.close .btn-line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.menu-btn.close .btn-line:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-btn.close .btn-line:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-#navBackground {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  width: 200px;
-  height: calc(100vh - 60px);
-  background-color: #1e1e1e;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
   z-index: 100;
 }
 
-#navBackground.show {
-  transform: translateX(0);
-}
-
-#navBackground p {
-  margin-bottom: 15px;
-  color: white;
+.menu-btn {
+  position: absolute;
+  z-index: 3;
+  left: 25px;
+  top: 25px;
+  height: 20px;
   cursor: pointer;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  position: relative;
-  top: 20px;
-  margin-bottom: 54px;
+  transition: all 0.5s ease-out;
 }
-
-#navBackground h1 {
-  color: #f4f4f4;
-  margin-bottom: 50px;
-}
-
-#navBackground.show p {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.dashboard-content {
-  margin-left: 0;
-  margin-top: 60px;
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-}
-
-#navBackground.show ~ .dashboard-content {
-  margin-left: 200px;
-}
-
-.chart-box {
+.menu-btn .btn-line {
+  width: 28px;
+  height: 3px;
+  margin: 0 0 5px 0;
   background: white;
+  transition: all 0.5s ease-out;
+}
+
+#navBackground {
+  transition: 0.25s ease-in-out;
+  position: absolute;
+  background-color: #292929;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vw;
+}
+#navBackground p {
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.8em;
+  font-family: 'Montserrat';
+  font-weight: 500;
+  color: #eea1a2;
+  transition: 0.3s ease;
+}
+#navBackground p:hover {
+  color: #f4c16d;
+}
+#navBackground h1 {
+  color: #f4c16d;
+  font-size: 1rem;
+  margin-right: 30px;
+}
+
+/* Ranking visual para os 3 primeiros */
+.rank-item {
+  padding: 10px;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
-  height: 200px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.gold-rank {
+  background: linear-gradient(to right, #FFD70055, #fff3);
+  color: #FFD700;
+}
+
+.silver-rank {
+  background: linear-gradient(to right, #C0C0C055, #fff3);
+  color: #C0C0C0;
+}
+
+.bronze-rank {
+  background: linear-gradient(to right, #CD7F3255, #fff3);
+  color: #CD7F32;
 }
