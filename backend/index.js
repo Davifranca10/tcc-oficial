@@ -58,8 +58,7 @@ const initDb = async () => {
       nome VARCHAR(100) NOT NULL,
       especialidade VARCHAR(100),
       telefone VARCHAR(20),
-      email VARCHAR(100) UNIQUE,
-      passwordHash VARCHAR(255) NOT NULL
+      email VARCHAR(100) UNIQUE
     )
   `);
 
@@ -136,7 +135,7 @@ const startServer = async () => {
     // Verifica se é o administrador
     if (email === "admin@admin" && password === "admin") {
       const token = jwt.sign({ email, role: "admin" }, SECRET_KEY, { expiresIn: "1h" });
-      return res.json({ token, role: "admin" }); // ✅ retorna JSON, não HTML!
+      return res.json({ token, role: "admin" });
     }
 
     // Verifica se é um usuário comum
@@ -147,8 +146,16 @@ const startServer = async () => {
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) return res.status(400).json({ message: "Credenciais inválidas" });
 
-    const token = jwt.sign({ email: user.email, name: user.name }, SECRET_KEY, { expiresIn: "1h" });
-    res.json({ token, role: "user" });
+    const token = jwt.sign({ email: user.email, name: user.name, id: user.id }, SECRET_KEY, { expiresIn: "1h" });
+
+    // 👇 ADICIONA O ID na resposta
+    res.json({
+      token,
+      role: "user",
+      id: user.id, // ← aqui está o segredo
+      name: user.name,
+      email: user.email
+    });
   } catch (err) {
     console.error("Erro no /login:", err.message);
     res.status(500).json({ message: "Erro interno no servidor" });
@@ -273,14 +280,20 @@ const startServer = async () => {
 
   /* Rotas de Agendamentos */
   app.get("/agendamentos", async (req, res) => {
-    try {
-      const [rows] = await pool.query("SELECT * FROM agendamentos");
-      res.json(rows);
-    } catch (err) {
-      console.error("Erro ao buscar agendamentos:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
-  });
+  try {
+    const [rows] = await pool.query(`
+      SELECT a.*, s.nome AS servico_nome, f.nome AS funcionario_nome, u.name AS cliente_nome
+      FROM agendamentos a
+      LEFT JOIN servicos s ON a.id_servico = s.id
+      LEFT JOIN funcionarios f ON a.id_funcionario = f.id
+      LEFT JOIN users u ON a.id_cliente = u.id
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar agendamentos:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
 
   app.post("/agendamentos", async (req, res) => {
     const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
@@ -385,13 +398,26 @@ app.delete("/funcionarios/:id", async (req, res) => {
 
 //get generico do agendamento
 app.get("/agendamentos", async (req, res) => {
-    try {
-        const [rows] = await pool.query("SELECT * FROM agendamentos");
-        res.json(rows);
-    } catch (err) {
-        console.error("Erro ao buscar agendamentos:", err.message);
-        res.status(500).json({ message: "Erro interno no servidor" });
-    }
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        a.id, 
+        a.data, 
+        a.horario, 
+        a.status,
+        u.name AS cliente_nome,
+        s.nome AS servico_nome,
+        f.nome AS funcionario_nome
+      FROM agendamentos a
+      LEFT JOIN users u ON a.id_cliente = u.id
+      LEFT JOIN servicos s ON a.id_servico = s.id
+      LEFT JOIN funcionarios f ON a.id_funcionario = f.id
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar agendamentos:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
 });
 
 //get especifico de agendamento
@@ -427,21 +453,41 @@ app.post("/agendamentos", async (req, res) => {
 
 //Editar agendamento
 app.put("/agendamentos/:id", async (req, res) => {
-    const { id } = req.params;
-    const { id_cliente, id_servico, id_funcionario, data, horario, status } = req.body;
-    try {
-        const [result] = await pool.query(
-            "UPDATE agendamentos SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ? WHERE id = ?",
-            [id_cliente, id_servico, id_funcionario, data, horario, status, id]
-        );
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Agendamento não encontrado" });
-        }
-        res.json({ message: "Agendamento atualizado com sucesso!" });
-    } catch (err) {
-        console.error("Erro ao atualizar agendamento:", err.message);
-        res.status(500).json({ message: "Erro interno no servidor" });
+  const { id } = req.params;
+  const { id_cliente, id_servico, id_funcionario, data, horario, status } = req.body;
+
+  try {
+    // Buscar agendamento atual para pegar valores que não foram enviados na atualização
+    const [rows] = await pool.query("SELECT * FROM agendamentos WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Agendamento não encontrado" });
     }
+    const agendamentoAtual = rows[0];
+
+    // Atualizar com valores enviados ou manter os atuais
+    const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
+    const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
+    const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
+    const novaData = data ?? agendamentoAtual.data;
+    const novoHorario = horario ?? agendamentoAtual.horario;
+    const novoStatus = status ?? agendamentoAtual.status;
+
+    const [result] = await pool.query(
+      `UPDATE agendamentos 
+       SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
+       WHERE id = ?`,
+      [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Agendamento não encontrado" });
+    }
+
+    res.json({ message: "Agendamento atualizado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao atualizar agendamento:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
 });
 
 //excluir agendamento
@@ -459,7 +505,23 @@ app.delete("/agendamentos/:id", async (req, res) => {
     }
 });
 
-
+app.patch("/agendamentos/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const [result] = await pool.query(
+      "UPDATE agendamentos SET status = ? WHERE id = ?",
+      [status, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Agendamento não encontrado" });
+    }
+    res.json({ message: "Status atualizado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao atualizar status:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
 
   /* Rota de Disponibilidade */
   app.post("/disponibilidade", async (req, res) => {
