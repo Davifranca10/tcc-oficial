@@ -130,3 +130,12 @@ body {
   opacity: 1;
   transform: translateX(0);
 }
+#left-cover-fix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30px; /* ajuste conforme o tamanho do espaço */
+  height: 60px;
+  background-color: #1e1e1e; /* mesma cor da barra */
+  z-index: 999;
+}

@@ -203,3 +203,12 @@ tr.selected {
         width: 70%;
     }
 }
+#left-cover-fix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px; /* ajuste conforme o tamanho do espaço */
+  height: 60px;
+  background-color: #1e1e1e; /* mesma cor da barra */
+  z-index: 999;
+}
