@@ -67,23 +67,3 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Código do menu (sem mudanças)
-const menuBtn = document.getElementById("menuBtn");
-const navBackground = document.getElementById("navBackground");
-let showMenu = false;
-
-menuBtn.addEventListener("click", () => {
-  showMenu = !showMenu;
-  menuBtn.classList.toggle("close", showMenu);
-  navBackground.classList.toggle("show", showMenu);
-  navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
-  navBackground.childNodes.forEach((el) => {
-    if (el.nodeType === 1) {
-      el.style.transitionDelay = showMenu ? "0.25s" : "0s";
-    }
-  });
-});
-
-function navigateTo(path) {
-  alert(`Navigating to ${path}`);
-}

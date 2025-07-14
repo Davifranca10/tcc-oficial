@@ -1,23 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Listagem de Serviços</title>
   <link rel="stylesheet" href="index.css" />
 </head>
+
 <body>
-
-  <!-- Menu Hamburguer -->
-  <div id="navBarRoot">
-    <div class="menu-btn" id="menuBtn">
-      <div class="btn-line"></div>
-      <div class="btn-line"></div>
-      <div class="btn-line"></div>
-    </div>
-  </div>
-  <div id="left-cover-fix"></div>
-
   <div id="navBackground">
     <h1>MENU</h1>
     <p onclick="window.location.href='../../../adm/index.html'">Início</p>
@@ -26,29 +17,11 @@
     <p onclick="window.location.href='../../funcionario/listar/index.html'">Gerenciar Funcionários</p>
     <p onclick="window.location.href='index.html'">Gerenciar Agendamentos</p>
   </div>
-
-  <script>
-    const menuBtn = document.getElementById("menuBtn");
-    const navBackground = document.getElementById("navBackground");
-    let showMenu = false;
-
-    menuBtn.addEventListener("click", () => {
-      showMenu = !showMenu;
-      menuBtn.classList.toggle("close", showMenu);
-      navBackground.classList.toggle("show", showMenu);
-      navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
-      navBackground.childNodes.forEach((el) => {
-        if (el.nodeType === 1) {
-          el.style.transitionDelay = showMenu ? "0.25s" : "0s";
-        }
-      });
-    });
-  </script>
-
   <!-- Conteúdo Principal -->
   <div class="container">
     <h1>Serviços Cadastrados</h1>
-    <button id="addServiceBtn" class="add-service-btn" onclick="window.location.href='../cadastro/index.html'">+</button>
+    <button id="addServiceBtn" class="add-service-btn"
+      onclick="window.location.href='../cadastro/index.html'">+</button>
 
     <table id="serviceTable">
       <thead>
@@ -78,4 +51,5 @@
 
   <script src="index.js"></script>
 </body>
+
 </html>

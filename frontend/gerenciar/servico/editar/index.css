@@ -1,111 +1,104 @@
-/* Geral */
+/* Importa fonte Montserrat */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+/* Base */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f2f5;
-  padding: 20px;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(to bottom right, #0f0f0f, #1a1a1a);
+  margin: 0;
+  padding: 0;
+  color: #eee;
 }
 
-/* Container principal do formulário */
+/* Container principal */
 .container {
-  max-width: 400px;
-  margin: auto;
-  background: white;
+  max-width: 500px;
+  margin: 120px auto 40px;
+  background-color: #1f1f1f;
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
 }
 
-/* Título centralizado */
+/* Título */
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
-}
-
-/* Estilo do input de imagem */
-input[type="file"] {
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-#previewImagem {
-  max-width: 300px;
-  margin-top: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
+  color: #f4c16d;
+  font-weight: 600;
 }
 
 /* Formulário */
 form {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
-/* Labels dos campos */
 label {
-  margin-top: 10px;
-  font-weight: bold;
-  color: #555;
-}
-
-/* Inputs e Select */
-input,
-select {
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  color: #eea1a2;
+  font-weight: 500;
   font-size: 1rem;
 }
 
-/* Botão principal */
+input,
+select {
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #292929;
+  color: #eee;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: #f4c16d;
+}
+
+/* Imagem */
+#previewImagem {
+  max-width: 100%;
+  margin-top: 1rem;
+  border-radius: 8px;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Botão */
 button {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
+  padding: 12px;
+  background-color: #f4c16d;
+  color: #1a1a1a;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-/* Hover do botão */
 button:hover {
-  background-color: #0056b3;
+  background-color: #eea1a2;
+  color: #1a1a1a;
 }
 
-/* Menu superior fixo */
-#navBarRoot {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 60px;
-  background-color: #1e1e1e;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
 
-/* Botão do menu hamburguer */
+
 .menu-btn {
-  position: relative;
   z-index: 1100;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  padding: 20px;
 }
 
-/* Linhas do hamburguer */
 .btn-line {
   width: 25px;
   height: 3px;
-  background-color: white;
+  background-color: #f4c16d;
   transition: all 0.3s ease;
 }
 
@@ -121,55 +114,89 @@ button:hover {
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Sidebar esquerda */
-#navBackground {
+/* Menu fixo no topo */
+#navBarRoot {
   position: fixed;
-  top: 60px;
-  left: 0;
-  width: 200px;
-  height: calc(100vh - 60px);
-  background-color: #1e1e1e;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  height: 5vh;
+  width: 100%;
   z-index: 100;
 }
 
-#navBackground.show {
-  transform: translateX(0);
+#navBackground {
+  transition: 0.25s ease-in-out;
+  position: absolute;
+  background-color: #292929;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vw;
 }
 
-/* Links do menu */
 #navBackground p {
-  margin-bottom: 15px;
-  color: white;
   cursor: pointer;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  position: relative;
-  top: 20px;
-  margin-bottom: 54px;
+  text-align: center;
+  font-size: 0.8em;
+  font-family: 'Montserrat';
+  font-weight: 500;
+  color: #eea1a2;
+  transition: 0.3s ease;
+}
+
+#navBackground p:hover {
+  color: #f4c16d;
 }
 
 #navBackground h1 {
-  color: #f4f4f4;
-  margin-bottom: 50px;
+  color: #f4c16d;
+  font-size: 1rem;
+  margin-right: 30px;
 }
 
 #navBackground.show p {
   opacity: 1;
   transform: translateX(0);
 }
+#navBackground.show {
+  transform: translateX(0);
+}
 #left-cover-fix {
   position: fixed;
   top: 0;
   left: 0;
-  width: 30px; /* ajuste conforme o tamanho do espaço */
+  width: 30px;
   height: 60px;
-  background-color: #1e1e1e; /* mesma cor da barra */
+  background-color: #1e1e1e;
   z-index: 999;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    background-color: #1f1f1f;
+    padding: 30px;
+    padding-top: 110px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .container {
+    margin: 100px 15px 40px;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  input, select {
+    font-size: 0.95rem;
+  }
+
+  button {
+    font-size: 1rem;
+  }
 }

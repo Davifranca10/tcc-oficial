@@ -1,44 +1,48 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to bottom right, #0f0f0f, #1a1a1a);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    color: #eee;
 }
 
 .container {
     max-width: 1000px;
     margin: auto;
-    background-color: white;
+    background-color: #1f1f1f;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
 }
 
 h1 {
     text-align: center;
     margin-bottom: 20px;
+    color: #f4c16d; /* dourado */
 }
 
 /* Linha selecionada */
 #userTable tr.selected {
-  background-color: #d0ebff;
-  font-weight: bold;
+    background-color: #4c2f30; /* tom rosado escuro */
+    font-weight: bold;
+    color: #f4c16d;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    color: #eee;
 }
 
 table thead {
-    background-color: #007bff;
-    color: white;
+    background-color: #4c2f30; /* rosa escuro */
+    color: #f4c16d; /* dourado */
 }
 
 table th, table td {
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     text-align: center;
     word-break: break-word;
 }
@@ -53,33 +57,25 @@ table th, table td {
 button {
     padding: 10px 20px;
     border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 4px;
+    background-color: #f4c16d; /* dourado */
+    color: #1a1a1a;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #eea1a2; /* rosa claro */
+    color: #1a1a1a;
 }
 
 tr.selected {
-    background-color: #d6eaff;
+    background-color: #4c2f30; /* rosa escuro */
 }
 
-/* Navbar */
-#navBarRoot {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 60px;
-    background-color: #1e1e1e;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-}
+
 
 .menu-btn {
     z-index: 1100;
@@ -92,7 +88,7 @@ tr.selected {
 .btn-line {
     width: 25px;
     height: 3px;
-    background-color: white;
+    background-color: #f4c16d;
     transition: all 0.3s ease;
 }
 
@@ -108,47 +104,50 @@ tr.selected {
     transform: rotate(-45deg) translate(5px, -5px);
 }
 
-#navBackground {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 200px;
-    height: calc(100vh - 60px);
-    background-color: #1e1e1e;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 100;
-}
 
+
+
+#navBarRoot {
+  position: fixed;
+  height: 5vh;
+  width: 100%;
+  z-index: 100;
+}
+#navBackground {
+  transition: 0.25s ease-in-out;
+  position: absolute;
+  background-color: #292929;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vw;
+}
+#navBackground p {
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.8em;
+  font-family: 'Montserrat';
+  font-weight: 500;
+  color: #eea1a2;
+  transition: 0.3s ease;
+}
+#navBackground p:hover {
+  color: #f4c16d;
+}
+#navBackground h1 {
+  color: #f4c16d;
+  font-size: 1rem;
+  margin-right: 30px;
+}
 #navBackground.show {
     transform: translateX(0);
 }
-
-#navBackground p {
-    margin-bottom: 15px;
-    color: white;
-    cursor: pointer;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    position: relative;
-    top: 20px;
-    margin-bottom: 54px;
+.container {
+  padding-top: 110px;
 }
 
-#navBackground h1 {
-    color: #f4f4f4;
-    margin-bottom: 50px;
-}
-
-#navBackground.show p {
-    opacity: 1;
-    transform: translateX(0);
-}
 
 /* ------------------------ */
 /* Responsividade */
@@ -203,12 +202,13 @@ tr.selected {
         width: 70%;
     }
 }
+
 #left-cover-fix {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 20px; /* ajuste conforme o tamanho do espaço */
-  height: 60px;
-  background-color: #1e1e1e; /* mesma cor da barra */
-  z-index: 999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 60px;
+    background-color: #292929;
+    z-index: 999;
 }

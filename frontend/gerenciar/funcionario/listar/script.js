@@ -1,31 +1,41 @@
-// Menu interativo
-const menuBtn = document.getElementById('menuBtn');
-const navBg = document.getElementById('navBackground');
 
-menuBtn.addEventListener('click', () => {
-    menuBtn.classList.toggle('close');
-    navBg.classList.toggle('show');
-});
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const response = await fetch("http://localhost:3000/funcionarios");
-    const funcionarios = await response.json();
+document.addEventListener("DOMContentLoaded", () => {
+  const tabelaCorpo = document.querySelector("#tabelaFuncionarios tbody");
 
-    const tbody = document.querySelector("#tabelaFuncionarios tbody");
+  // URL da API para buscar os funcionários
+  const apiUrl = "http://localhost:3000/funcionarios"; // ajuste para sua URL real
 
-    funcionarios.forEach(func => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${func.id}</td>
-        <td>${func.nome}</td>
-        <td>${func.especialidade}</td>
-        <td>${func.telefone}</td>
-        <td>${func.email}</td>
-      `;
-      tbody.appendChild(row);
+  fetch(apiUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Erro ao buscar funcionários: " + response.status);
+      }
+      return response.json();
+    })
+    .then((funcionarios) => {
+      tabelaCorpo.innerHTML = ""; // limpa tabela antes de preencher
+
+      if (funcionarios.length === 0) {
+        tabelaCorpo.innerHTML = `<tr><td colspan="5">Nenhum funcionário encontrado.</td></tr>`;
+        return;
+      }
+
+      funcionarios.forEach((func) => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${func.id}</td>
+          <td>${func.nome}</td>
+          <td>${func.especialidade || ""}</td>
+          <td>${func.telefone || ""}</td>
+          <td>${func.email || ""}</td>
+        `;
+
+        tabelaCorpo.appendChild(tr);
+      });
+    })
+    .catch((error) => {
+      console.error("Erro:", error);
+      tabelaCorpo.innerHTML = `<tr><td colspan="5">Erro ao carregar os funcionários.</td></tr>`;
     });
-  } catch (err) {
-    console.error("Erro ao buscar funcionários:", err);
-    alert("Erro ao carregar a lista de funcionários.");
-  }
 });

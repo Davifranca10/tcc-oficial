@@ -10,15 +10,7 @@
 
 <body>
 
-    <!-- Menu Hamburguer -->
-    <div id="navBarRoot">
-        <div class="menu-btn" id="menuBtn">
-            <div class="btn-line"></div>
-            <div class="btn-line"></div>
-            <div class="btn-line"></div>
-        </div>
-    </div>
-    <div id="left-cover-fix"></div>
+    
 
     <div id="navBackground">
         <h1>MENU</h1>
@@ -29,23 +21,6 @@
         <p onclick="window.location.href='index.html'">Gerenciar Agendamentos</p>
     </div>
 
-    <script>
-        const menuBtn = document.getElementById("menuBtn");
-        const navBackground = document.getElementById("navBackground");
-        let showMenu = false;
-
-        menuBtn.addEventListener("click", () => {
-            showMenu = !showMenu;
-            menuBtn.classList.toggle("close", showMenu);
-            navBackground.classList.toggle("show", showMenu);
-            navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
-            navBackground.childNodes.forEach((el) => {
-                if (el.nodeType === 1) {
-                    el.style.transitionDelay = showMenu ? "0.25s" : "0s";
-                }
-            });
-        });
-    </script>
 
     <!-- Formulário de Edição -->
     <div class="container">

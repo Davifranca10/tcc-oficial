@@ -1,195 +1,203 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    margin: 0;
-    padding: 20px;
-  }
-  
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #333;
-  }
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(to bottom right, #0f0f0f, #1a1a1a);
+  margin: 0;
+  padding: 0;
+  color: #eee;
+}
 
-  #serviceTable tr.selected {
-  background-color: #d0ebff;
-  font-weight: bold;
+.container {
+  max-width: 1000px;
+  margin: auto;
+  background-color: #1f1f1f;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  padding-top: 110px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #f4c16d;
 }
 
 #serviceTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  color: #eee;
 }
 
 #serviceTable th,
 #serviceTable td {
   padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ccc;
+  text-align: center;
+  border: 1px solid #333;
+  word-break: break-word;
 }
 
 #serviceTable th {
-  background-color: #f2f2f2;
+  background-color: #4c2f30;
+  color: #f4c16d;
 }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  table th, table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-  }
-  
-  table th {
-    background-color: #f7f7f7;
-  }
-  
-  button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #007bff;
-  }
-  
-  button.delete {
-    background-color: #e74c3c;
-  }
-  
-  button.delete:hover {
-    background-color: #c0392b;
-  }
-  
-  button.edit {
-    background-color: #f39c12;
-  }
-  
-  button.edit:hover {
-    background-color: #d68910;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
-  }
-  
-  form input, form textarea {
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  #navBarRoot {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 60px;
-  background-color: #1e1e1e;
-  z-index: 1000;
+
+#serviceTable tr.selected {
+  background-color: #4c2f30;
+  font-weight: bold;
+  color: #f4c16d;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  background-color: #f4c16d;
+  color: #1a1a1a;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #eea1a2;
+  color: #1a1a1a;
+}
+
+.add-service-btn {
+  font-size: 1.8rem;
+  font-weight: bold;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #eea1a2;
+  color: #1a1a1a;
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  justify-content: center;
+  position: absolute;
+  top: 100px;
+  right: 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-.menu-btn {
-  position: relative;
-  z-index: 1100;
-  cursor: pointer;
+.add-service-btn:hover {
+  background-color: #f4c16d;
+}
+
+.buttons {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 30px;
 }
 
-.btn-line {
-  width: 25px;
-  height: 3px;
-  background-color: white;
-  transition: all 0.3s ease;
-}
-
-.menu-btn.close .btn-line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.menu-btn.close .btn-line:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-btn.close .btn-line:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
+/* Menu fixo no topo */
+#navBarRoot {
+  position: fixed;
+  height: 5vh;
+  width: 100%;
+  z-index: 100;
 }
 
 #navBackground {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  width: 200px;
-  height: calc(100vh - 60px);
-  background-color: #1e1e1e;
+  transition: 0.25s ease-in-out;
+  position: absolute;
+  background-color: #292929;
+  width: 100%;
+  height: 70px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  gap: 3vw;
+}
+
+#navBackground p {
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.8em;
+  font-family: 'Montserrat';
+  font-weight: 500;
+  color: #eea1a2;
+  transition: 0.3s ease;
+}
+
+#navBackground p:hover {
+  color: #f4c16d;
+}
+
+#navBackground h1 {
+  color: #f4c16d;
+  font-size: 1rem;
+  margin-right: 30px;
 }
 
 #navBackground.show {
   transform: translateX(0);
 }
 
-#navBackground p {
-  margin-bottom: 15px;
-  color: white;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  position: relative;
-  top: 20px;
-  margin-bottom: 54px;
-}
-
-#navBackground h1 {
-  color: #f4f4f4;
-  margin-bottom: 50px;
-}
-
-#navBackground.show p {
-  opacity: 1;
-  transform: translateX(0);
-}
 #left-cover-fix {
   position: fixed;
   top: 0;
   left: 0;
-  width: 30px; /* ajuste conforme o tamanho do espaço */
+  width: 30px;
   height: 60px;
-  background-color: #1e1e1e; /* mesma cor da barra */
+  background-color: #1e1e1e;
   z-index: 999;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  table th, table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+  }
+
+  table th, table td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: 18px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  #navBackground {
+    width: 70%;
+  }
 }

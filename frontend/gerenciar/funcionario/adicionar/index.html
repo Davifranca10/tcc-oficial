@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cadastro de Funcionário</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+
+  <div id="navBackground">
+    <h1>MENU</h1>
+    <p onclick="window.location.href='../../../index.html'">Início</p>
+    <p onclick="window.location.href='../../usuario/listagem/index.html'">Gerenciar Usuários</p>
+    <p onclick="window.location.href='../../servico/listagem/index.html'">Gerenciar Serviços</p>
+    <p onclick="window.location.href='index.html'">Gerenciar Funcionários</p>
+    <p onclick="window.location.href='../../agendamento/listagem/index.html'">Gerenciar Agendamentos</p>
+  </div>
+
   <div class="container">
     <h1>Cadastro de Funcionário</h1>
     <form id="formFuncionario">
@@ -22,7 +34,7 @@
       <label for="email">Email:</label>
       <input type="email" id="email" required>
 
-      
+
 
       <button type="submit">Cadastrar</button>
     </form>
@@ -30,4 +42,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>

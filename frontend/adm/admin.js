@@ -1,11 +1,4 @@
-// Menu interativo
-const menuBtn = document.getElementById('menuBtn');
-const navBg = document.getElementById('navBackground');
 
-menuBtn.addEventListener('click', () => {
-    menuBtn.classList.toggle('close');
-    navBg.classList.toggle('show');
-});
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -175,7 +168,7 @@ function renderizarGraficoLucroBarra(data) {
     }
 
     const labels = data.map(item => item.mes || "Mês?");
-    const valores = data.map(item => Number(item.lucro) || 0);
+    const valores = data.map(item => Number(item.total) || 0);
 
     const ctx = document.getElementById("graficoLucro").getContext("2d");
     new Chart(ctx, {

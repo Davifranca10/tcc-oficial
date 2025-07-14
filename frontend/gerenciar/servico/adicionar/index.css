@@ -1,70 +1,76 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+  background-color: #121212; 
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  color: #eee; 
 }
 
 .container {
   max-width: 900px;
   margin: 0 auto;
-  background: #fff;
+  background: #1e1e1e;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); 
 }
 
 h1 {
   text-align: center;
   margin-bottom: 30px;
-  color: #333;
+  color: #f9d342; 
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  background-color: #2a2a2a; 
 }
 
 table th, table td {
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #444; 
   text-align: left;
+  color: #eee;
 }
 
 table th {
-  background-color: #f7f7f7;
+  background-color: #f9d342; 
+  color: #121212;
 }
 
 button {
   padding: 10px 20px;
   margin: 5px;
   border: none;
-  background-color: #007bff;
-  color: white;
+  background-color: #f9d342; 
+  color: #121212;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 button:hover {
-  background-color: #007bff;
+  background-color: #d4b12a; 
 }
 
 button.delete {
-  background-color: #e74c3c;
+  background-color: #f342aa; 
+  color: white;
 }
 
 button.delete:hover {
-  background-color: #c0392b;
+  background-color: #c42e8b;
 }
 
 button.edit {
-  background-color: #f39c12;
+  background-color: #f9d342; 
+  color: #121212;
 }
 
 button.edit:hover {
-  background-color: #d68910;
+  background-color: #d4b12a;
 }
 
 form {
@@ -76,22 +82,13 @@ form {
 form input, form textarea {
   margin-bottom: 10px;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+  font-size: 16px;/* borda escura */
   border-radius: 4px;
+  background-color: #121212;
+  color: #eee;
 }
 
-#navBarRoot {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 60px;
-  background-color: #1e1e1e;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-}
+
 
 .menu-btn {
   position: relative;
@@ -105,7 +102,7 @@ form input, form textarea {
 .btn-line {
   width: 25px;
   height: 3px;
-  background-color: white;
+  background-color: #eee;
   transition: all 0.3s ease;
 }
 
@@ -121,53 +118,92 @@ form input, form textarea {
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-#navBackground {
+#navBarRoot {
   position: fixed;
-  top: 60px;
-  left: 0;
-  width: 200px;
-  height: calc(100vh - 60px);
-  background-color: #1e1e1e;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  height: 5vh;
+  width: 100%;
   z-index: 100;
 }
 
-#navBackground.show {
-  transform: translateX(0);
+#navBackground {
+  transition: 0.25s ease-in-out;
+  position: absolute;
+  background-color: #292929;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vw;
 }
 
 #navBackground p {
-  margin-bottom: 15px;
-  color: white;
   cursor: pointer;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  position: relative;
-  top: 20px;
-  margin-bottom: 54px;
+  text-align: center;
+  font-size: 0.8em;
+  font-family: 'Montserrat';
+  font-weight: 500;
+  color: #eea1a2;
+  transition: 0.3s ease;
+}
+
+#navBackground p:hover {
+  color: #f4c16d;
 }
 
 #navBackground h1 {
-  color: #f4f4f4;
-  margin-bottom: 50px;
+  color: #f4c16d;
+  font-size: 1rem;
+  margin-right: 30px;
 }
 
 #navBackground.show p {
   opacity: 1;
   transform: translateX(0);
 }
+
+#navBackground.show p {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 #left-cover-fix {
   position: fixed;
   top: 0;
   left: 0;
-  width: 30px; /* ajuste conforme o tamanho do espaço */
+  width: 30px;
   height: 60px;
-  background-color: #1e1e1e; /* mesma cor da barra */
+  background-color: #1e1e1e;
   z-index: 999;
+}
+.container {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    background-color: #1f1f1f;
+    padding: 30px;
+    padding-top: 110px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 20px;
+  }
+  
+  #navBackground {
+    width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+  }
+
+  #navBackground {
+    width: 150px;
+  }
 }
