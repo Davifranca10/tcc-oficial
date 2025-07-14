@@ -673,36 +673,31 @@ app.get("/admin/lucro-estimado", async (req, res) => {
 //Gráficos
 app.get("/admin/graficos", async (req, res) => {
   try {
-    // Consulta para agendamentos por mês do ano atual
-    const [agendamentosRows] = await pool.query(`
-      SELECT MONTH(data_agendamento) AS mes, COUNT(*) AS total
+    const [agendamentosPorMes] = await pool.query(`
+      SELECT MONTH(data) AS mes, COUNT(*) AS total
       FROM agendamentos
-      WHERE YEAR(data_agendamento) = YEAR(CURDATE())
+      WHERE YEAR(data) = YEAR(CURDATE())
       GROUP BY mes
       ORDER BY mes
     `);
 
-    // Consulta para lucro por mês do ano atual
-    // Assumindo que lucro é soma dos preços dos serviços agendados pagos no mês
-    const [lucroRows] = await pool.query(`
-      SELECT MONTH(data_agendamento) AS mes, 
-             SUM(valor_total) AS total
-      FROM agendamentos
-      WHERE YEAR(data_agendamento) = YEAR(CURDATE()) AND status = 'confirmado'
+    const [lucroPorMes] = await pool.query(`
+      SELECT 
+        MONTH(a.data) AS mes, 
+        SUM(s.preco) AS total
+      FROM agendamentos a
+      JOIN servicos s ON a.id_servico = s.id
+      WHERE 
+        YEAR(a.data) = YEAR(CURDATE()) AND 
+        a.status = 'aceito'
       GROUP BY mes
       ORDER BY mes
     `);
 
-    // Ajustar resultado para garantir meses sem dados também, se quiser, mas não obrigatório
-
-    res.json({
-      agendamentosPorMes: agendamentosRows,
-      lucroPorMes: lucroRows
-    });
-
-  } catch (error) {
-    console.error("Erro ao buscar dados dos gráficos:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    res.json({ agendamentosPorMes, lucroPorMes });
+  } catch (err) {
+    console.error("Erro ao buscar dados dos gráficos:", err);
+    res.status(500).json({ erro: "Erro ao buscar dados dos gráficos" });
   }
 });
 
