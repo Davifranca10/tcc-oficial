@@ -1,5 +1,3 @@
-
-
 // Variáveis globais 
 const selectServico = document.querySelector("select[name='id_servico']");
 const previewImagem = document.getElementById("previewImagem");
@@ -100,6 +98,12 @@ async function salvarAgendamento() {
       return;
     }
 
+    const diaSelecionado = new Date(data).getDay();
+    if (diaSelecionado === 0 || diaSelecionado === 6) {
+      alert("Não é permitido agendar aos finais de semana.");
+      return;
+    }
+
     if (!idServico || !idFuncionario || !data || !horario) {
       alert("Preencha todos os campos antes de confirmar.");
       return;
@@ -120,9 +124,10 @@ async function salvarAgendamento() {
         })
       });
 
+      const resJson = await response.json();
+
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || "Erro ao agendar.");
+        throw new Error(resJson.message || "Erro ao agendar.");
       }
 
       alert("Agendamento enviado com sucesso! Aguarde a confirmação.");
@@ -131,7 +136,7 @@ async function salvarAgendamento() {
       previewImagem.src = "https://via.placeholder.com/300x250?text=Selecione+um+serviço";
     } catch (err) {
       console.error("Erro ao enviar agendamento:", err.message);
-      alert("Erro ao enviar agendamento.");
+      alert(err.message);
     }
   });
 }
@@ -140,4 +145,15 @@ async function salvarAgendamento() {
 window.addEventListener("DOMContentLoaded", () => {
   carregarServicos();
   salvarAgendamento();
+});
+
+// Impede seleção de sábados e domingos no input de data
+document.getElementById("campoData").addEventListener("input", function () {
+  const dataSelecionada = new Date(this.value);
+  const diaSemana = dataSelecionada.getDay(); // 0 = domingo, 6 = sábado
+
+  if (diaSemana === 0 || diaSemana === 6) {
+    alert("Não é permitido agendar aos finais de semana.");
+    this.value = ""; // limpa a data
+  }
 });
