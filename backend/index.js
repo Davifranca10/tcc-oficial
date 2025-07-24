@@ -278,7 +278,11 @@ const startServer = async () => {
     }
   });
 
+
+
   /* Rotas de Agendamentos */
+
+  //
   app.get("/agendamentos", async (req, res) => {
     try {
       const [rows] = await pool.query(`
@@ -296,19 +300,39 @@ const startServer = async () => {
   });
 
   app.post("/agendamentos", async (req, res) => {
-    const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
-    try {
-      const status = "pendente";
-      await pool.query(
-        "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, ?)",
-        [id_cliente, id_servico, id_funcionario, data, horario, status]
-      );
-      res.status(201).json({ message: "Agendamento criado com sucesso" });
-    } catch (err) {
-      console.error("Erro ao criar agendamento:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
+  const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
+
+  try {
+    // Verifica se é final de semana
+    const diaSemana = new Date(data).getDay(); // 0 = domingo, 6 = sábado
+    if (diaSemana === 0 || diaSemana === 6) {
+      return res.status(400).json({ message: "Não é permitido agendar aos finais de semana." });
     }
-  });
+
+    // Verifica conflito de horário com mesmo funcionário
+    const [conflito] = await pool.query(`
+      SELECT * FROM agendamentos 
+      WHERE data = ? AND horario = ? AND id_funcionario = ? AND status IN ('pendente', 'confirmado', 'aceito')
+    `, [data, horario, id_funcionario]);
+
+    if (conflito.length > 0) {
+      return res.status(400).json({ message: "Já existe um agendamento nesse horário com esse funcionário." });
+    }
+
+    const status = "pendente";
+    await pool.query(
+      "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, ?)",
+      [id_cliente, id_servico, id_funcionario, data, horario, status]
+    );
+
+    res.status(201).json({ message: "Agendamento criado com sucesso" });
+
+  } catch (err) {
+    console.error("Erro ao criar agendamento:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
 
 
 
