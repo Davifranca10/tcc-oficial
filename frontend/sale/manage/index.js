@@ -1,8 +1,10 @@
 // Variáveis globais 
 const selectServico = document.querySelector("select[name='id_servico']");
 const previewImagem = document.getElementById("previewImagem");
-const nomeFuncionario = document.getElementById("nomeFuncionario"); // Exibe o nome do funcionário
-const idFuncionarioInput = document.getElementById("idFuncionario"); // Campo oculto para enviar o ID
+const nomeFuncionario = document.getElementById("nomeFuncionario");
+const idFuncionarioInput = document.getElementById("idFuncionario");
+const campoData = document.getElementById("campoData");
+const selectHorario = document.getElementById("selectHorario");
 
 // Função para carregar serviços e preencher a combo box
 async function carregarServicos() {
@@ -44,6 +46,11 @@ async function carregarServicos() {
 
     // Atualiza imagem e funcionário ao mudar o select
     selectServico.addEventListener("change", () => {
+      // Resetar data e horários
+      campoData.value = "";
+      selectHorario.innerHTML = '<option>Selecione uma data primeiro</option>';
+      selectHorario.disabled = true;
+
       const selectedOption = selectServico.options[selectServico.selectedIndex];
       const imagemPath = selectedOption.dataset.imagem;
       const nomeFunc = selectedOption.dataset.funcionarioNome;
@@ -76,8 +83,8 @@ async function carregarServicos() {
     console.error("Erro ao carregar serviços:", error);
     selectServico.innerHTML = "<option disabled selected>Erro ao carregar serviços</option>";
     previewImagem.src = "https://via.placeholder.com/300x250?text=Erro+ao+carregar";
-    if (nomeFuncionario) nomeFuncionario.textContent = "-";
-    if (idFuncionarioInput) idFuncionarioInput.value = "";
+    nomeFuncionario.textContent = "-";
+    idFuncionarioInput.value = "";
   }
 }
 
@@ -89,8 +96,8 @@ async function salvarAgendamento() {
 
     const idServico = selectServico.value;
     const idFuncionario = idFuncionarioInput.value;
-    const data = document.querySelector("input[name='data']").value;
-    const horario = document.querySelector("select[name='horario']").value;
+    const data = campoData.value;
+    const horario = selectHorario.value;
     const idCliente = localStorage.getItem("id_cliente");
 
     if (!idCliente) {
@@ -141,19 +148,66 @@ async function salvarAgendamento() {
   });
 }
 
-// Quando a página estiver carregada
+// Carregar horários disponíveis com base na data e serviço
+campoData.addEventListener("input", async function () {
+  const dataSelecionada = new Date(this.value);
+  const diaSemana = dataSelecionada.getDay();
+
+  // Bloqueia finais de semana
+  if (diaSemana === 0 || diaSemana === 6) {
+    alert("Não é permitido agendar aos finais de semana.");
+    this.value = "";
+    selectHorario.innerHTML = '<option>Selecione uma data válida</option>';
+    selectHorario.disabled = true;
+    return;
+  }
+
+  const data = this.value;
+  const idServico = selectServico.value;
+
+  if (!data || !idServico) {
+    selectHorario.innerHTML = "<option>Escolha um serviço e uma data</option>";
+    selectHorario.disabled = true;
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/disponibilidade", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data, id_servico: idServico })
+    });
+
+    const horariosDisponiveis = await response.json();
+
+    const todosHorarios = [
+      "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00",
+      "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
+    ];
+
+    selectHorario.innerHTML = '<option value="">Selecione um horário</option>';
+    todosHorarios.forEach(h => {
+      const option = document.createElement("option");
+      option.value = h;
+      if (horariosDisponiveis.includes(h)) {
+        option.textContent = `${h} - Disponível`;
+      } else {
+        option.textContent = `${h} - Reservado`;
+        option.disabled = true;
+      }
+      selectHorario.appendChild(option);
+    });
+
+    selectHorario.disabled = false;
+  } catch (err) {
+    console.error("Erro ao carregar horários:", err);
+    selectHorario.innerHTML = "<option>Erro ao carregar horários</option>";
+    selectHorario.disabled = true;
+  }
+});
+
+// Ao carregar a página
 window.addEventListener("DOMContentLoaded", () => {
   carregarServicos();
   salvarAgendamento();
-});
-
-// Impede seleção de sábados e domingos no input de data
-document.getElementById("campoData").addEventListener("input", function () {
-  const dataSelecionada = new Date(this.value);
-  const diaSemana = dataSelecionada.getDay(); // 0 = domingo, 6 = sábado
-
-  if (diaSemana === 0 || diaSemana === 6) {
-    alert("Não é permitido agendar aos finais de semana.");
-    this.value = ""; // limpa a data
-  }
 });
