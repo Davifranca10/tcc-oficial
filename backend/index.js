@@ -747,9 +747,13 @@ app.get("/admin/graficos", async (req, res) => {
   }
 
   async function getAgendamentosPorDia(data) {
-    const [rows] = await pool.query("SELECT horario, id_servico FROM agendamentos WHERE data = ?", [data]);
+    const [rows] = await pool.query(
+      "SELECT horario, id_servico FROM agendamentos WHERE data = ? AND status = 'aceito'",
+      [data]
+    );
     return rows;
   }
+
 
   function gerarHorariosValidos(duracao, agendamentos) {
     const horaInicio = 8;
