@@ -58,11 +58,11 @@
         <option value="">Selecione uma data primeiro</option>
       </select>
       
-      <div id="infoFuncionario" style="margin-top: 15px; font-weight: bold;">
-        Funcionário(a): <span id="nomeFuncionario">-</span>
-      </div>
-      <!-- Campo oculto para enviar o ID do funcionário -->
-      <input type="hidden" name="id_funcionario" id="idFuncionario" />
+      <label for="idFuncionario">Funcionário</label>
+      <select name="id_funcionario" id="idFuncionario" required>
+        <option value="">-- Selecione um funcionário --</option>
+      </select>
+
 
       <button type="submit">Confirmar</button>
     </form>
