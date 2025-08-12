@@ -189,12 +189,19 @@ campoData.addEventListener("input", async function () {
     todosHorarios.forEach(h => {
       const option = document.createElement("option");
       option.value = h;
-      if (horariosDisponiveis.includes(h)) {
+      // Caso o backend retorne array de strings (horários livres)
+      if (Array.isArray(horariosDisponiveis) && horariosDisponiveis.includes(h)) {
         option.textContent = `${h} - Disponível`;
-      } else {
+      }
+      // Caso o backend retorne objetos {hora, reservado}
+      else if (!Array.isArray(horariosDisponiveis) && horariosDisponiveis.some(hor => hor.hora === h && !hor.reservado)) {
+        option.textContent = `${h} - Disponível`;
+      }
+      else {
         option.textContent = `${h} - Reservado`;
         option.disabled = true;
       }
+
       selectHorario.appendChild(option);
     });
 
