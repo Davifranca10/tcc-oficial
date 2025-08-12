@@ -333,6 +333,32 @@ const startServer = async () => {
   }
 });
 
+app.get("/agendamentos/:funcionarioId/:data", async (req, res) => {
+  const { funcionarioId, data } = req.params;
+  const horarios = [
+    "08:00", "09:00", "10:00", "11:00",
+    "14:00", "15:00", "16:00", "17:00"
+  ];
+
+  try {
+    const [agendamentos] = await pool.query(
+      "SELECT horario FROM agendamentos WHERE funcionario_id = ? AND data = ? AND status = 'aceito'",
+      [funcionarioId, data]
+    );
+
+    const horariosIndisponiveis = agendamentos.map(a => a.horario);
+    const resposta = horarios.map(h => ({
+      hora: h,
+      reservado: horariosIndisponiveis.includes(h)
+    }));
+
+    res.json(resposta);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 
 
