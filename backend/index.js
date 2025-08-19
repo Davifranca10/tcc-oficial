@@ -280,88 +280,6 @@ const startServer = async () => {
 
 
 
-  /* Rotas de Agendamentos */
-
-  //
-  app.get("/agendamentos", async (req, res) => {
-    try {
-      const [rows] = await pool.query(`
-      SELECT a.*, s.nome AS servico_nome, f.nome AS funcionario_nome, u.name AS cliente_nome
-      FROM agendamentos a
-      LEFT JOIN servicos s ON a.id_servico = s.id
-      LEFT JOIN funcionarios f ON a.id_funcionario = f.id
-      LEFT JOIN users u ON a.id_cliente = u.id
-    `);
-      res.json(rows);
-    } catch (err) {
-      console.error("Erro ao buscar agendamentos:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
-  });
-
-  app.post("/agendamentos", async (req, res) => {
-  const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
-
-  try {
-    // Verifica se é final de semana
-    const diaSemana = new Date(data).getDay(); // 0 = domingo, 6 = sábado
-    if (diaSemana === 0 || diaSemana === 6) {
-      return res.status(400).json({ message: "Não é permitido agendar aos finais de semana." });
-    }
-
-    // Verifica conflito de horário com mesmo funcionário
-    const [conflito] = await pool.query(`
-      SELECT * FROM agendamentos 
-      WHERE data = ? AND horario = ? AND id_funcionario = ? AND status IN ('pendente', 'confirmado', 'aceito')
-    `, [data, horario, id_funcionario]);
-
-    if (conflito.length > 0) {
-      return res.status(400).json({ message: "Já existe um agendamento nesse horário com esse funcionário." });
-    }
-
-    const status = "pendente";
-    await pool.query(
-      "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, ?)",
-      [id_cliente, id_servico, id_funcionario, data, horario, status]
-    );
-
-    res.status(201).json({ message: "Agendamento criado com sucesso" });
-
-  } catch (err) {
-    console.error("Erro ao criar agendamento:", err.message);
-    res.status(500).json({ message: "Erro interno no servidor" });
-  }
-});
-
-app.get("/agendamentos/:funcionarioId/:data", async (req, res) => {
-  const { funcionarioId, data } = req.params;
-  const horarios = [
-    "08:00", "09:00", "10:00", "11:00",
-    "14:00", "15:00", "16:00", "17:00"
-  ];
-
-  try {
-    const [agendamentos] = await pool.query(
-      "SELECT horario FROM agendamentos WHERE funcionario_id = ? AND data = ? AND status = 'aceito'",
-      [funcionarioId, data]
-    );
-
-    const horariosIndisponiveis = agendamentos.map(a => a.horario);
-    const resposta = horarios.map(h => ({
-      hora: h,
-      reservado: horariosIndisponiveis.includes(h)
-    }));
-
-    res.json(resposta);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-
-
-
-
   //FUNCIONARIOS
 
   //cadastro de funcionarios
@@ -446,29 +364,63 @@ app.get("/agendamentos/:funcionarioId/:data", async (req, res) => {
 
   //AGENDAMENTO
 
-  //get generico do agendamento
+  // Criar um novo agendamento (com validação de finais de semana e conflito de horários)
+  app.post("/agendamentos", async (req, res) => {
+    const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
+
+    try {
+      // Impede agendamento em finais de semana
+      const diaSemana = new Date(data).getDay();
+      if (diaSemana === 0 || diaSemana === 6) {
+        return res.status(400).json({ message: "Não é permitido agendar aos finais de semana." });
+     }
+
+      // Verificar se já existe agendamento aceito para o mesmo funcionário, data e horário
+      const [conflitos] = await pool.query(
+       "SELECT * FROM agendamentos WHERE id_funcionario = ? AND data = ? AND horario = ? AND status = 'aceito'",
+        [id_funcionario, data, horario]
+     );
+
+     if (conflitos.length > 0) {
+       return res.status(400).json({ message: "Este horário já está reservado." });
+      }
+
+     // Inserir agendamento (status inicial: pendente)
+      await pool.query(
+       "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, 'pendente')",
+       [id_cliente, id_servico, id_funcionario, data, horario]
+     );
+
+     res.status(201).json({ message: "Agendamento criado com sucesso!" });
+   } catch (err) {
+      console.error("Erro ao criar agendamento:", err);
+     res.status(500).json({ message: "Erro ao criar agendamento." });
+   }
+  });
+
+  // Listar agendamentos (com detalhes do serviço, funcionário e cliente)
   app.get("/agendamentos", async (req, res) => {
     try {
-      const [rows] = await pool.query(`
-      SELECT 
-        a.id, 
-        a.data, 
-        a.horario, 
-        a.status,
-        u.name AS cliente_nome,
-        s.nome AS servico_nome,
-        f.nome AS funcionario_nome
-      FROM agendamentos a
-      LEFT JOIN users u ON a.id_cliente = u.id
-      LEFT JOIN servicos s ON a.id_servico = s.id
-      LEFT JOIN funcionarios f ON a.id_funcionario = f.id
-    `);
-      res.json(rows);
-    } catch (err) {
-      console.error("Erro ao buscar agendamentos:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
+     const [rows] = await pool.query(`
+       SELECT 
+         a.id, a.data, a.horario, a.status,
+          s.nome AS servico, s.duracao, 
+          f.nome AS funcionario, 
+          u.name AS cliente
+       FROM agendamentos a
+       JOIN servicos s ON a.id_servico = s.id
+       JOIN funcionarios f ON a.id_funcionario = f.id
+       JOIN users u ON a.id_cliente = u.id
+        ORDER BY a.data, a.horario
+     `);
+
+     res.json(rows);
+   } catch (err) {
+     console.error("Erro ao buscar agendamentos:", err);
+     res.status(500).json({ message: "Erro ao buscar agendamentos." });
+   }
   });
+
 
   //get especifico de agendamento
   app.get("/agendamentos/:id", async (req, res) => {
@@ -481,22 +433,6 @@ app.get("/agendamentos/:funcionarioId/:data", async (req, res) => {
       res.json(rows[0]);
     } catch (err) {
       console.error("Erro ao buscar agendamento:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
-  });
-
-  //Cadastro de agendamento
-  app.post("/agendamentos", async (req, res) => {
-    const { id_cliente, id_servico, id_funcionario, data, horario } = req.body;
-    try {
-      const status = "pendente";
-      await pool.query(
-        "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, ?)",
-        [id_cliente, id_servico, id_funcionario, data, horario, status]
-      );
-      res.status(201).json({ message: "Agendamento criado com sucesso" });
-    } catch (err) {
-      console.error("Erro ao criar agendamento:", err.message);
       res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
