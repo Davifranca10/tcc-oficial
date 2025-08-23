@@ -7,6 +7,12 @@ const mysql = require("mysql2/promise");
 /* Upload de Imagem */
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
+// Garante que a pasta de uploads exista
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
 
 // Configuração do Multer para upload de imagem
 const storage = multer.diskStorage({
@@ -103,10 +109,11 @@ const startServer = async () => {
     host: "localhost",
     user: "root",
     password: "root",
-    database: "auth_demo"
+    database: "auth_demo",
+    waitForConnections: true,
+    connectionLimit: 10,
+    dateStrings: true // evita problemas de timezone nos DATE/TIME
   });
-
-
 
   //USUARIOS/CLIENTES
 
@@ -148,11 +155,10 @@ const startServer = async () => {
 
       const token = jwt.sign({ email: user.email, name: user.name, id: user.id }, SECRET_KEY, { expiresIn: "1h" });
 
-      // 👇 ADICIONA O ID na resposta
       res.json({
         token,
         role: "user",
-        id: user.id, // ← aqui está o segredo
+        id: user.id,
         name: user.name,
         email: user.email
       });
@@ -178,10 +184,11 @@ const startServer = async () => {
     const { id } = req.params;
     const { name, telefone, email, password } = req.body;
     try {
-      const passwordHash = await bcrypt.hash(password, 10);
+      const passwordHash = password ? await bcrypt.hash(password, 10) : undefined;
+
       const [result] = await pool.query(
-        "UPDATE users SET name = ?, telefone = ?, email = ?, passwordHash = ? WHERE id = ?",
-        [name, telefone, email, passwordHash, id]
+        "UPDATE users SET name = COALESCE(?, name), telefone = COALESCE(?, telefone), email = COALESCE(?, email), passwordHash = COALESCE(?, passwordHash) WHERE id = ?",
+        [name ?? null, telefone ?? null, email ?? null, passwordHash ?? null, id]
       );
       if (result.affectedRows === 0) return res.status(404).json({ message: "Usuário não encontrado" });
       res.status(200).json({ message: "Usuário atualizado com sucesso" });
@@ -204,18 +211,16 @@ const startServer = async () => {
     }
   });
 
-
-
   //SERVIÇOS
 
   // Listar todos os serviços com nome do funcionário responsável
   app.get("/servicos", async (req, res) => {
     try {
       const [rows] = await pool.query(`
-      SELECT s.*, f.nome AS nome_funcionario 
-      FROM servicos s
-      LEFT JOIN funcionarios f ON s.id_funcionario = f.id
-    `);
+        SELECT s.*, f.nome AS nome_funcionario 
+        FROM servicos s
+        LEFT JOIN funcionarios f ON s.id_funcionario = f.id
+      `);
       res.json(rows);
     } catch (err) {
       console.error("Erro ao buscar serviços:", err.message);
@@ -278,8 +283,6 @@ const startServer = async () => {
     }
   });
 
-
-
   //FUNCIONARIOS
 
   //cadastro de funcionarios
@@ -325,7 +328,6 @@ const startServer = async () => {
     const { nome, especialidade, telefone, email } = req.body;
 
     try {
-
       const [result] = await pool.query(
         "UPDATE funcionarios SET nome = ?, especialidade = ?, telefone = ?, email = ? WHERE id = ?",
         [nome, especialidade || "", telefone, email, id]
@@ -360,18 +362,17 @@ const startServer = async () => {
     }
   });
 
+  // Utilitário: serviço + funcionário
   async function getServicoComFuncionario(id_servico) {
-  const sql = `
-    SELECT s.nome AS servico, s.duracao, f.nome AS funcionario
-    FROM servicos s
-    JOIN funcionarios f ON s.id_funcionario = f.id
-    WHERE s.id = ?
-  `;
-  const [rows] = await connection.execute(sql, [id_servico]);
-  return rows[0]; // retorna servico + funcionario
-}
-
-
+    const sql = `
+      SELECT s.nome AS servico, s.duracao, f.nome AS funcionario
+      FROM servicos s
+      JOIN funcionarios f ON s.id_funcionario = f.id
+      WHERE s.id = ?
+    `;
+    const [rows] = await pool.query(sql, [id_servico]);
+    return rows[0];
+  }
 
   //AGENDAMENTO
 
@@ -384,54 +385,57 @@ const startServer = async () => {
       const diaSemana = new Date(data).getDay();
       if (diaSemana === 0 || diaSemana === 6) {
         return res.status(400).json({ message: "Não é permitido agendar aos finais de semana." });
-     }
-
-      // Verificar se já existe agendamento aceito para o mesmo funcionário, data e horário
-      const [conflitos] = await pool.query(
-       "SELECT * FROM agendamentos WHERE id_funcionario = ? AND data = ? AND horario = ? AND status = 'aceito'",
-        [id_funcionario, data, horario]
-     );
-
-     if (conflitos.length > 0) {
-       return res.status(400).json({ message: "Este horário já está reservado." });
       }
 
-     // Inserir agendamento (status inicial: pendente)
-      await pool.query(
-       "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, 'pendente')",
-       [id_cliente, id_servico, id_funcionario, data, horario]
-     );
+      // Verificar conflito para o mesmo funcionário, data e horário (aceitos)
+      const [conflitos] = await pool.query(
+        "SELECT * FROM agendamentos WHERE id_funcionario = ? AND data = ? AND horario = ? AND status = 'aceito'",
+        [id_funcionario, data, horario]
+      );
 
-     res.status(201).json({ message: "Agendamento criado com sucesso!" });
-   } catch (err) {
+      if (conflitos.length > 0) {
+        return res.status(400).json({ message: "Este horário já está reservado." });
+      }
+
+      // Inserir agendamento (status inicial: pendente)
+      await pool.query(
+        "INSERT INTO agendamentos (id_cliente, id_servico, id_funcionario, data, horario, status) VALUES (?, ?, ?, ?, ?, 'pendente')",
+        [id_cliente, id_servico, id_funcionario, data, horario]
+      );
+
+      res.status(201).json({ message: "Agendamento criado com sucesso!" });
+    } catch (err) {
       console.error("Erro ao criar agendamento:", err);
-     res.status(500).json({ message: "Erro ao criar agendamento." });
-   }
+      res.status(500).json({ message: "Erro ao criar agendamento." });
+    }
   });
 
-  // Listar agendamentos (com detalhes do serviço, funcionário e cliente)
+  // Listar agendamentos (com detalhes e aliases que o frontend espera)
   app.get("/agendamentos", async (req, res) => {
     try {
-     const [rows] = await pool.query(`
-       SELECT 
-         a.id, a.data, a.horario, a.status,
-          s.nome AS servico, s.duracao, 
-          f.nome AS funcionario, 
-          u.name AS cliente
-       FROM agendamentos a
-       JOIN servicos s ON a.id_servico = s.id
-       JOIN funcionarios f ON a.id_funcionario = f.id
-       JOIN users u ON a.id_cliente = u.id
+      const [rows] = await pool.query(`
+        SELECT 
+          a.id,
+          a.data,
+          a.horario,
+          a.status,
+          s.nome AS servico_nome,
+          s.duracao,
+          f.nome AS funcionario_nome,
+          u.name AS cliente_nome
+        FROM agendamentos a
+        JOIN servicos s ON a.id_servico = s.id
+        JOIN funcionarios f ON a.id_funcionario = f.id
+        JOIN users u ON a.id_cliente = u.id
         ORDER BY a.data, a.horario
-     `);
+      `);
 
-     res.json(rows);
-   } catch (err) {
-     console.error("Erro ao buscar agendamentos:", err);
-     res.status(500).json({ message: "Erro ao buscar agendamentos." });
-   }
+      res.json(rows);
+    } catch (err) {
+      console.error("Erro ao buscar agendamentos:", err);
+      res.status(500).json({ message: "Erro ao buscar agendamentos." });
+    }
   });
-
 
   //get especifico de agendamento
   app.get("/agendamentos/:id", async (req, res) => {
@@ -448,20 +452,18 @@ const startServer = async () => {
     }
   });
 
-  //Editar agendamento
+  //Editar agendamento (parcial: suporta enviar só status)
   app.put("/agendamentos/:id", async (req, res) => {
     const { id } = req.params;
     const { id_cliente, id_servico, id_funcionario, data, horario, status } = req.body;
 
     try {
-      // Buscar agendamento atual para pegar valores que não foram enviados na atualização
       const [rows] = await pool.query("SELECT * FROM agendamentos WHERE id = ?", [id]);
       if (rows.length === 0) {
         return res.status(404).json({ message: "Agendamento não encontrado" });
       }
       const agendamentoAtual = rows[0];
 
-      // Atualizar com valores enviados ou manter os atuais
       const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
       const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
       const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
@@ -471,8 +473,8 @@ const startServer = async () => {
 
       const [result] = await pool.query(
         `UPDATE agendamentos 
-       SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
-       WHERE id = ?`,
+         SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
+         WHERE id = ?`,
         [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
       );
 
@@ -502,6 +504,7 @@ const startServer = async () => {
     }
   });
 
+  // Atualizar apenas o status (opcional, caso queira usar PATCH dedicado)
   app.patch("/agendamentos/:id/status", async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -523,33 +526,28 @@ const startServer = async () => {
   // Rota para visão geral do painel administrativo
   app.get("/admin/visao-geral", async (req, res) => {
     try {
-      // Totais gerais
       const [[{ totalUsuarios }]] = await pool.query("SELECT COUNT(*) AS totalUsuarios FROM users");
       const [[{ totalServicos }]] = await pool.query("SELECT COUNT(*) AS totalServicos FROM servicos");
       const [[{ totalFuncionarios }]] = await pool.query("SELECT COUNT(*) AS totalFuncionarios FROM funcionarios");
       const [[{ totalAgendamentos }]] = await pool.query("SELECT COUNT(*) AS totalAgendamentos FROM agendamentos");
 
-      // Status dos agendamentos
       const [[{ pendentes }]] = await pool.query("SELECT COUNT(*) AS pendentes FROM agendamentos WHERE status = 'pendente'");
       const [[{ cancelados }]] = await pool.query("SELECT COUNT(*) AS cancelados FROM agendamentos WHERE status = 'cancelado'");
       const [[{ confirmados }]] = await pool.query("SELECT COUNT(*) AS confirmados FROM agendamentos WHERE status = 'confirmado' OR status = 'aceito'");
 
-      // Agendamentos do mês atual
       const [[{ agendamentosMes }]] = await pool.query(`
-  SELECT COUNT(*) AS agendamentosMes
-  FROM agendamentos
-  WHERE MONTH(data) = MONTH(CURRENT_DATE())
-    AND YEAR(data) = YEAR(CURRENT_DATE())
-`);
+        SELECT COUNT(*) AS agendamentosMes
+        FROM agendamentos
+        WHERE MONTH(data) = MONTH(CURRENT_DATE())
+          AND YEAR(data) = YEAR(CURRENT_DATE())
+      `);
 
-      // Agendamentos do ano atual
       const [[{ agendamentosAno }]] = await pool.query(`
-  SELECT COUNT(*) AS agendamentosAno
-  FROM agendamentos
-  WHERE YEAR(data) = YEAR(CURRENT_DATE())
-`);
+        SELECT COUNT(*) AS agendamentosAno
+        FROM agendamentos
+        WHERE YEAR(data) = YEAR(CURRENT_DATE())
+      `);
 
-      // Retorna para o frontend
       res.json({
         totalUsuarios,
         totalServicos,
@@ -570,141 +568,139 @@ const startServer = async () => {
 
   //Servicos mais Agendados
   app.get("/admin/servicos-mais-agendados", async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
-      SELECT s.nome AS servico, COUNT(*) AS total
-      FROM agendamentos a
-      JOIN servicos s ON a.id_servico = s.id
-      GROUP BY s.nome
-      ORDER BY total DESC
-      LIMIT 3
-    `);
+    try {
+      const [rows] = await pool.query(`
+        SELECT s.nome AS servico, COUNT(*) AS total
+        FROM agendamentos a
+        JOIN servicos s ON a.id_servico = s.id
+        GROUP BY s.nome
+        ORDER BY total DESC
+        LIMIT 3
+      `);
+      res.json(rows);
+    } catch (err) {
+      console.error("Erro ao buscar serviços mais agendados:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
+
+  //Clientes mais ativos
+  app.get("/admin/clientes-mais-ativos", async (req, res) => {
+    try {
+      const [rows] = await pool.query(`
+        SELECT u.name AS cliente, COUNT(a.id) AS total
+        FROM agendamentos a
+        JOIN users u ON a.id_cliente = u.id
+        GROUP BY a.id_cliente
+        ORDER BY total DESC
+        LIMIT 3
+      `);
     res.json(rows);
-  } catch (err) {
-    console.error("Erro ao buscar serviços mais agendados:", err.message);
-    res.status(500).json({ message: "Erro interno no servidor" });
-  }
-});
+    } catch (err) {
+      console.error("Erro na rota /admin/clientes-mais-ativos:", err);
+      res.status(500).json({ message: "Erro ao buscar clientes mais ativos" });
+    }
+  });
 
-//Clientes mais ativos
+  //Comparativo de Crescimento
+  app.get("/admin/comparativo-crescimento", async (req, res) => {
+    try {
+      const [[{ agendamentosAtual }]] = await pool.query(`
+        SELECT COUNT(*) AS agendamentosAtual
+        FROM agendamentos
+        WHERE MONTH(data) = MONTH(CURRENT_DATE())
+        AND YEAR(data) = YEAR(CURRENT_DATE())
+      `);
 
-app.get("/admin/clientes-mais-ativos", async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
-      SELECT u.name AS cliente, COUNT(a.id) AS total
-      FROM agendamentos a
-      JOIN users u ON a.id_cliente = u.id
-      GROUP BY a.id_cliente
-      ORDER BY total DESC
-      LIMIT 3
-    `);
-    res.json(rows);
-  } catch (err) {
-    console.error("Erro na rota /admin/clientes-mais-ativos:", err);
-    res.status(500).json({ message: "Erro ao buscar clientes mais ativos" });
-  }
-});
+      const [[{ agendamentosAnterior }]] = await pool.query(`
+        SELECT COUNT(*) AS agendamentosAnterior
+        FROM agendamentos
+        WHERE MONTH(data) = MONTH(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
+        AND YEAR(data) = YEAR(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
+      `);
 
-//Comparativo de Crescimento
-app.get("/admin/comparativo-crescimento", async (req, res) => {
-  try {
-    const [[{ agendamentosAtual }]] = await pool.query(`
-      SELECT COUNT(*) AS agendamentosAtual
-      FROM agendamentos
-      WHERE MONTH(data) = MONTH(CURRENT_DATE())
-      AND YEAR(data) = YEAR(CURRENT_DATE())
-    `);
+      const crescimento = agendamentosAnterior > 0
+        ? ((agendamentosAtual - agendamentosAnterior) / agendamentosAnterior * 100).toFixed(2)
+        : "100.00";
 
-    const [[{ agendamentosAnterior }]] = await pool.query(`
-      SELECT COUNT(*) AS agendamentosAnterior
-      FROM agendamentos
-      WHERE MONTH(data) = MONTH(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
-      AND YEAR(data) = YEAR(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
-    `);
+      res.json({
+        agendamentosAtual,
+        agendamentosAnterior,
+        crescimento
+      });
+    } catch (err) {
+      console.error("Erro no comparativo de crescimento:", err.message);
+      res.status(500).json({ message: "Erro ao buscar comparativo de crescimento" });
+    }
+  });
 
-    const crescimento = agendamentosAnterior > 0
-      ? ((agendamentosAtual - agendamentosAnterior) / agendamentosAnterior * 100).toFixed(2)
-      : "100.00";
+  //Lucro Mensal e Anual
+  app.get("/admin/lucro-estimado", async (req, res) => {
+    try {
+      const [[{ lucroMensal }]] = await pool.query(`
+        SELECT SUM(s.preco) AS lucroMensal
+        FROM agendamentos a
+        JOIN servicos s ON a.id_servico = s.id
+        WHERE a.status IN ('confirmado', 'aceito')
+          AND MONTH(a.data) = MONTH(CURRENT_DATE())
+          AND YEAR(a.data) = YEAR(CURRENT_DATE())
+      `);
 
-    res.json({
-      agendamentosAtual,
-      agendamentosAnterior,
-      crescimento
-    });
-  } catch (err) {
-    console.error("Erro no comparativo de crescimento:", err.message);
-    res.status(500).json({ message: "Erro ao buscar comparativo de crescimento" });
-  }
-});
+      const [[{ lucroAnual }]] = await pool.query(`
+        SELECT SUM(s.preco) AS lucroAnual
+        FROM agendamentos a
+        JOIN servicos s ON a.id_servico = s.id
+        WHERE a.status IN ('confirmado', 'aceito')
+          AND YEAR(a.data) = YEAR(CURRENT_DATE())
+      `);
 
-//Lucro Mensal e Anual
-app.get("/admin/lucro-estimado", async (req, res) => {
-  try {
-    const [[{ lucroMensal }]] = await pool.query(`
-      SELECT SUM(s.preco) AS lucroMensal
-      FROM agendamentos a
-      JOIN servicos s ON a.id_servico = s.id
-      WHERE a.status IN ('confirmado', 'aceito')
-      AND MONTH(a.data) = MONTH(CURRENT_DATE())
-      AND YEAR(a.data) = YEAR(CURRENT_DATE())
-    `);
+      res.json({
+        lucroMensal: lucroMensal || 0,
+        lucroAnual: lucroAnual || 0
+      });
+    } catch (err) {
+      console.error("Erro na rota /admin/lucro-estimado:", err.message);
+      res.status(500).json({ message: "Erro ao buscar lucro estimado" });
+    }
+  });
 
-    const [[{ lucroAnual }]] = await pool.query(`
-      SELECT SUM(s.preco) AS lucroAnual
-      FROM agendamentos a
-      JOIN servicos s ON a.id_servico = s.id
-      WHERE a.status IN ('confirmado', 'aceito')
-      AND YEAR(a.data) = YEAR(CURRENT_DATE())
-    `);
+  //Gráficos
+  app.get("/admin/graficos", async (req, res) => {
+    try {
+      const [agendamentosPorMes] = await pool.query(`
+        SELECT MONTH(data) AS mes, COUNT(*) AS total
+        FROM agendamentos
+        WHERE YEAR(data) = YEAR(CURDATE())
+        GROUP BY mes
+        ORDER BY mes
+      `);
 
-    res.json({
-      lucroMensal: lucroMensal || 0,
-      lucroAnual: lucroAnual || 0
-    });
-  } catch (err) {
-    console.error("Erro na rota /admin/lucro-estimado:", err.message);
-    res.status(500).json({ message: "Erro ao buscar lucro estimado" });
-  }
-});
+      const [lucroPorMes] = await pool.query(`
+        SELECT 
+          MONTH(a.data) AS mes, 
+          SUM(s.preco) AS total
+        FROM agendamentos a
+        JOIN servicos s ON a.id_servico = s.id
+        WHERE 
+          YEAR(a.data) = YEAR(CURDATE()) AND 
+          a.status = 'aceito'
+        GROUP BY mes
+        ORDER BY mes
+      `);
 
-//Gráficos
-app.get("/admin/graficos", async (req, res) => {
-  try {
-    const [agendamentosPorMes] = await pool.query(`
-      SELECT MONTH(data) AS mes, COUNT(*) AS total
-      FROM agendamentos
-      WHERE YEAR(data) = YEAR(CURDATE())
-      GROUP BY mes
-      ORDER BY mes
-    `);
-
-    const [lucroPorMes] = await pool.query(`
-      SELECT 
-        MONTH(a.data) AS mes, 
-        SUM(s.preco) AS total
-      FROM agendamentos a
-      JOIN servicos s ON a.id_servico = s.id
-      WHERE 
-        YEAR(a.data) = YEAR(CURDATE()) AND 
-        a.status = 'aceito'
-      GROUP BY mes
-      ORDER BY mes
-    `);
-
-    res.json({ agendamentosPorMes, lucroPorMes });
-  } catch (err) {
-    console.error("Erro ao buscar dados dos gráficos:", err);
-    res.status(500).json({ erro: "Erro ao buscar dados dos gráficos" });
-  }
-});
-
+      res.json({ agendamentosPorMes, lucroPorMes });
+    } catch (err) {
+      console.error("Erro ao buscar dados dos gráficos:", err);
+      res.status(500).json({ erro: "Erro ao buscar dados dos gráficos" });
+    }
+  });
 
   /* Rota de Disponibilidade */
   app.post("/disponibilidade", async (req, res) => {
     const { data, id_servico } = req.body;
     try {
-      const duracaoServico = await getDuracaoServico(id_servico); // duração do serviço solicitado
-      const agendamentos = await getAgendamentosPorDiaComDuracao(data); // agendamentos do dia com suas durações
+      const duracaoServico = await getDuracaoServico(id_servico);
+      const agendamentos = await getAgendamentosPorDiaComDuracao(data);
       const horariosPossiveis = gerarHorariosValidos(duracaoServico, agendamentos);
       res.json(horariosPossiveis);
     } catch (err) {
@@ -727,7 +723,7 @@ app.get("/admin/graficos", async (req, res) => {
       WHERE a.data = ? AND a.status = 'aceito'
     `, [data]);
     return rows.map(r => ({
-      horario: r.horario.slice(0,5), // "HH:MM"
+      horario: String(r.horario).slice(0, 5), // "HH:MM"
       duracao: Number(r.duracao) || 0
     }));
   }
@@ -760,16 +756,14 @@ app.get("/admin/graficos", async (req, res) => {
     const overlap = (ini, fim) => ocupados.some(([s, e]) => ini < e && fim > s);
 
     const disponiveis = [];
-    const duracaoTotal = duracaoServicoSelecionado + MARGEM;
+    const duracaoTotal = Number(duracaoServicoSelecionado) + MARGEM;
 
     for (const h of todosHorarios) {
       const ini = toMin(h);
       const fim = ini + duracaoTotal;
 
-      // precisa caber dentro do expediente
       if (fim > JANELA_FIM) continue;
 
-      // se não sobrepõe, adiciona
       if (!overlap(ini, fim)) {
         disponiveis.push(h);
       }
