@@ -118,6 +118,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("clientesMaisAtivos").innerHTML = "<li>Erro ao carregar</li>";
     }
 
+
+   
+
+
     // Carregar gráficos
     carregarGraficos();
 });
