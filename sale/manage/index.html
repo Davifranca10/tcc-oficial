@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendamento</title>
+  <link rel="stylesheet" href="index.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- Menu Hamburguer -->
+  <div class="hamburger" onclick="toggleSidebar()">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2>Menu</h2>
+    <a href="../../index.html">Início</a>
+    <a href="../index.html">Serviços</a>
+    <a href="../../agend/index.html">Agenda</a>
+
+
+  </div>
+
+  <!-- Conteúdo Principal -->
+
+  <div class="main">
+
+    <!-- Imagem do serviço -->
+    <div class="image-preview-container">
+      <img id="previewImagem" src="https://placehold.co/300x250?text=Selecione+um+serviço" alt="Imagem do serviço" />
+    </div>
+
+
+    <form id="form-agendamento" method="POST">
+      <h1>Agendar Serviço</h1>
+
+      <input type="hidden" name="id_cliente" value="1">
+
+      <label>Serviço</label>
+      <select name="id_servico" required>
+        <option value="1">Corte Masculino</option>
+        <option value="2">Corte Feminino</option>
+      </select>
+
+      <label>Data</label>
+      <input type="date" name="data" id="campoData" required>
+
+      <label>Horário</label>
+      <select name="horario" id="selectHorario" required disabled>
+        <option value="">Selecione uma data primeiro</option>
+      </select>
+
+      <p><strong>Funcionário:</strong> <span id="nomeFuncionario">-</span></p>
+      <input type="hidden" id="idFuncionario" name="idFuncionario">
+
+
+      <button type="submit">Confirmar</button>
+    </form>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+
+</html>

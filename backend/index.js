@@ -360,6 +360,17 @@ const startServer = async () => {
     }
   });
 
+  async function getServicoComFuncionario(id_servico) {
+  const sql = `
+    SELECT s.nome AS servico, s.duracao, f.nome AS funcionario
+    FROM servicos s
+    JOIN funcionarios f ON s.id_funcionario = f.id
+    WHERE s.id = ?
+  `;
+  const [rows] = await connection.execute(sql, [id_servico]);
+  return rows[0]; // retorna servico + funcionario
+}
+
 
 
   //AGENDAMENTO
@@ -692,8 +703,8 @@ app.get("/admin/graficos", async (req, res) => {
   app.post("/disponibilidade", async (req, res) => {
     const { data, id_servico } = req.body;
     try {
-      const duracaoServico = await getDuracaoServico(id_servico);
-      const agendamentos = await getAgendamentosPorDia(data);
+      const duracaoServico = await getDuracaoServico(id_servico); // duração do serviço solicitado
+      const agendamentos = await getAgendamentosPorDiaComDuracao(data); // agendamentos do dia com suas durações
       const horariosPossiveis = gerarHorariosValidos(duracaoServico, agendamentos);
       res.json(horariosPossiveis);
     } catch (err) {
@@ -708,35 +719,63 @@ app.get("/admin/graficos", async (req, res) => {
     return rows[0].duracao;
   }
 
-  async function getAgendamentosPorDia(data) {
-    const [rows] = await pool.query(
-      "SELECT horario, id_servico FROM agendamentos WHERE data = ? AND status = 'aceito'",
-      [data]
-    );
-    return rows;
+  async function getAgendamentosPorDiaComDuracao(data) {
+    const [rows] = await pool.query(`
+      SELECT a.horario, s.duracao
+      FROM agendamentos a
+      JOIN servicos s ON a.id_servico = s.id
+      WHERE a.data = ? AND a.status = 'aceito'
+    `, [data]);
+    return rows.map(r => ({
+      horario: r.horario.slice(0,5), // "HH:MM"
+      duracao: Number(r.duracao) || 0
+    }));
   }
 
+  function gerarHorariosValidos(duracaoServicoSelecionado, agendamentos) {
+    const MARGEM = 30; // 30 minutos extras
+    const JANELA_INICIO = 8 * 60;  // 08:00 em minutos
+    const JANELA_FIM = 18 * 60;    // 18:00 em minutos
 
-  function gerarHorariosValidos(duracao, agendamentos) {
-    const horaInicio = 8;
-    const horaFim = 18;
-    const ocupados = agendamentos.map(a => a.horario.slice(0, 5)); // ex: "14:00"
+    // Grade fixa a cada 30 minutos
+    const todosHorarios = [];
+    for (let min = JANELA_INICIO; min < JANELA_FIM; min += 30) {
+      const h = String(Math.floor(min / 60)).padStart(2, "0");
+      const m = String(min % 60).padStart(2, "0");
+      todosHorarios.push(`${h}:${m}`);
+    }
 
-    const horariosDisponiveis = [];
-    for (let h = horaInicio; h < horaFim; h++) {
-      for (let m = 0; m < 60; m += duracao) {
-        const inicio = new Date(0, 0, 0, h, m);
-        const fim = new Date(inicio.getTime() + duracao * 60000); // duração em ms
-        const horaFimDecimal = fim.getHours() + fim.getMinutes() / 60;
-        if (horaFimDecimal > horaFim) continue;
+    const toMin = (hhmm) => {
+      const [h, m] = hhmm.split(":").map(Number);
+      return h * 60 + m;
+    };
 
-        const hora = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-        if (!ocupados.includes(hora)) {
-          horariosDisponiveis.push(hora);
-        }
+    // Intervalos ocupados
+    const ocupados = agendamentos.map(a => {
+      const ini = toMin(a.horario);
+      const fim = ini + a.duracao + MARGEM;
+      return [ini, fim];
+    });
+
+    const overlap = (ini, fim) => ocupados.some(([s, e]) => ini < e && fim > s);
+
+    const disponiveis = [];
+    const duracaoTotal = duracaoServicoSelecionado + MARGEM;
+
+    for (const h of todosHorarios) {
+      const ini = toMin(h);
+      const fim = ini + duracaoTotal;
+
+      // precisa caber dentro do expediente
+      if (fim > JANELA_FIM) continue;
+
+      // se não sobrepõe, adiciona
+      if (!overlap(ini, fim)) {
+        disponiveis.push(h);
       }
     }
-    return horariosDisponiveis;
+
+    return disponiveis;
   }
 
   /* Middleware Global de Erro */
