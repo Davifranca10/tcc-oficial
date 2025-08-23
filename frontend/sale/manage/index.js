@@ -213,28 +213,10 @@ campoData.addEventListener("input", async function () {
   }
 });
 
-async function carregarFuncionarios() {
-  try {
-    const response = await fetch("http://localhost:3000/funcionarios");
-    const funcionarios = await response.json();
-    const selectFuncionario = document.getElementById("idFuncionario");
 
-    selectFuncionario.innerHTML = '<option value="">-- Selecione um funcionário --</option>';
-
-    funcionarios.forEach(func => {
-      const option = document.createElement("option");
-      option.value = func.id;
-      option.textContent = func.nome;
-      selectFuncionario.appendChild(option);
-    });
-  } catch (err) {
-    console.error("Erro ao carregar funcionários:", err);
-  }
-}
 
 // Ao carregar a página
 window.addEventListener("DOMContentLoaded", () => {
   carregarServicos();
-  carregarFuncionarios();
   salvarAgendamento();
 });

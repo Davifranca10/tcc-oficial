@@ -34,8 +34,7 @@
 
     <!-- Imagem do serviço -->
     <div class="image-preview-container">
-      <img id="previewImagem" src="https://placehold.co/300x250?text=Selecione+um+serviço"
-        alt="Imagem do serviço" />
+      <img id="previewImagem" src="https://placehold.co/300x250?text=Selecione+um+serviço" alt="Imagem do serviço" />
     </div>
 
 
@@ -57,11 +56,9 @@
       <select name="horario" id="selectHorario" required disabled>
         <option value="">Selecione uma data primeiro</option>
       </select>
-      
-      <label for="idFuncionario">Funcionário</label>
-      <select name="id_funcionario" id="idFuncionario" required>
-        <option value="">-- Selecione um funcionário --</option>
-      </select>
+
+      <p><strong>Funcionário:</strong> <span id="nomeFuncionario">-</span></p>
+      <input type="hidden" id="idFuncionario" name="idFuncionario">
 
 
       <button type="submit">Confirmar</button>
