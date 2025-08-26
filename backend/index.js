@@ -12,14 +12,14 @@ const fs = require("fs");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "salaonovostilosuporte@yahoo.com",
-    pass: "salaonovostil"
+    user: "salao.novo.stilo.suporte@gmail.com",
+    pass: "hgmbclklfcwsehgm"
   }
 });
 
 async function enviarEmail(destinatario, assunto, mensagem) {
   const mailOptions = {
-    from: "salaonovostilosuporte@yahoo.com",
+    from: "salao.novo.stilo.suporte@gmail.com",
     to: destinatario,
     subject: assunto,
     text: mensagem
@@ -29,6 +29,7 @@ async function enviarEmail(destinatario, assunto, mensagem) {
     console.log("Email enviado para:", destinatario);
   } catch (err) {
     console.error("Erro ao enviar email:", err.message);
+    console.error(err);
   }
 }
 
