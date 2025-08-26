@@ -4,10 +4,33 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2/promise");
-/* Upload de Imagem */
 const multer = require("multer");
 const path = require("path");
+const nodemailer = require("nodemailer");
 const fs = require("fs");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "salaonovostilosuporte@yahoo.com",
+    pass: "salaonovostil"
+  }
+});
+
+async function enviarEmail(destinatario, assunto, mensagem) {
+  const mailOptions = {
+    from: "salaonovostilosuporte@yahoo.com",
+    to: destinatario,
+    subject: assunto,
+    text: mensagem
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Email enviado para:", destinatario);
+  } catch (err) {
+    console.error("Erro ao enviar email:", err.message);
+  }
+}
 
 // Garante que a pasta de uploads exista
 if (!fs.existsSync("uploads")) {
@@ -464,45 +487,75 @@ const startServer = async () => {
       }
       const agendamentoAtual = rows[0];
 
-      const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
-      const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
-      const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
-      const novaData = data ?? agendamentoAtual.data;
-      const novoHorario = horario ?? agendamentoAtual.horario;
-      const novoStatus = status ?? agendamentoAtual.status;
+     const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
+     const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
+     const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
+     const novaData = data ?? agendamentoAtual.data;
+     const novoHorario = horario ?? agendamentoAtual.horario;
+     const novoStatus = status ?? agendamentoAtual.status;
 
       const [result] = await pool.query(
-        `UPDATE agendamentos 
+       `UPDATE agendamentos 
          SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
-         WHERE id = ?`,
-        [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
-      );
+        WHERE id = ?`,
+       [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
+     );
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Agendamento não encontrado" });
-      }
+     if (result.affectedRows === 0) {
+       return res.status(404).json({ message: "Agendamento não encontrado" });
+     }
+
+     // Se aceitou, envia email ao cliente
+     if (novoStatus === "aceito") {
+        const [[{ email, data: dataAg, horario: horaAg }]] = await pool.query(
+          `SELECT u.email, a.data, a.horario
+          FROM agendamentos a
+          JOIN users u ON a.id_cliente = u.id
+          WHERE a.id = ?`, [id]
+        );
+
+        const mensagem = `Seu pedido no dia ${new Date(dataAg).toLocaleDateString()} às ${horaAg} foi ACEITO.`;
+        await enviarEmail(email, "Confirmação de Agendamento", mensagem);
+     }
 
       res.json({ message: "Agendamento atualizado com sucesso!" });
     } catch (err) {
-      console.error("Erro ao atualizar agendamento:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
-    }
+     console.error("Erro ao atualizar agendamento:", err.message);
+     res.status(500).json({ message: "Erro interno no servidor" });
+   }
   });
+
 
   //excluir agendamento
   app.delete("/agendamentos/:id", async (req, res) => {
     const { id } = req.params;
     try {
+      // Busca antes de excluir para poder mandar email
+      const [rows] = await pool.query(
+       `SELECT u.email, a.data, a.horario
+        FROM agendamentos a
+        JOIN users u ON a.id_cliente = u.id
+         WHERE a.id = ?`, [id]
+      );
+
+      if (rows.length > 0) {
+        const { email, data, horario } = rows[0];
+        const mensagem = `Seu pedido no dia ${new Date(data).toLocaleDateString()} às ${horario} foi REJEITADO.`;
+        await enviarEmail(email, "Agendamento Recusado", mensagem);
+      }
+
       const [result] = await pool.query("DELETE FROM agendamentos WHERE id = ?", [id]);
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Agendamento não encontrado" });
-      }
-      res.status(200).json({ message: "Agendamento deletado com sucesso" });
+     }
+
+     res.status(200).json({ message: "Agendamento deletado com sucesso" });
     } catch (err) {
-      console.error("Erro ao deletar agendamento:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
+     console.error("Erro ao deletar agendamento:", err.message);
+     res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
+
 
   // Atualizar apenas o status (opcional, caso queira usar PATCH dedicado)
   app.patch("/agendamentos/:id/status", async (req, res) => {
