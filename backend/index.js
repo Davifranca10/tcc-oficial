@@ -9,6 +9,7 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
 
+// Configuração do Nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
