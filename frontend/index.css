@@ -305,6 +305,7 @@ b::after {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 
 
 }
@@ -334,14 +335,14 @@ b::after {
     background-position: center;
     background-repeat: no-repeat;
 
-    width: 100vw;
+    width: 100%;
     /* largura total da viewport */
     height: 100vh;
     /* altura total da viewport */
 }
 
 .blond-hair {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
 }
@@ -360,14 +361,14 @@ b::after {
     background-position: center;
     background-repeat: no-repeat;
 
-    width: 100vw;
+    width: 100%;
     /* largura total da viewport */
     height: 100vh;
     /* altura total da viewport */
 }
 
 .morena {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
 }
@@ -386,7 +387,7 @@ b::after {
     background-position: center;
     background-repeat: no-repeat;
 
-    width: 100vw;
+    width: 100%;
     /* largura total da viewport */
     height: 100vh;
     /* altura total da viewport */   
@@ -536,10 +537,12 @@ b::after {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 25px;
+    align-items: center;
+    gap: 45px;
 }
 
 .contato-item {
+
     display: flex;
     align-items: center;
     gap: 15px;
@@ -576,16 +579,21 @@ b::after {
 
     position: relative;
     top: -5%;
-    font-size: 200%;
+    font-size: 6em;
 }
 
+
+@media(max-width:786px){
+    .contato h2{
+        font-size: 2em;
+    }
+}
 
 
 
 .location {
     position: relative;
     width: 100%;
-
     text-align: center;
     color: white;
 }
@@ -610,6 +618,7 @@ b::after {
 }
 
 .location .text-overlay h2 {
+
     position: absolute;
     top: 30%;
     left: 50%;
@@ -626,11 +635,23 @@ b::after {
     z-index: 2;
 }
 
+.location .text-overlay h2 br{
+    text-align: center;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .location .text-overlay h2 br{
+        display: inline-block;
+    }
+}
+
 .location .text-overlay p {
     position: absolute;
     top: 50%;
     left: 0;
     transform: translateY(-50%);
+    margin-top: -5vh;
     width: 100%;
     text-align: center;
     font-size: 20px;
@@ -643,9 +664,16 @@ b::after {
     z-index: 2;
 }
 
+@media (max-width: 786px){
+    .location .text-overlay p {
+        text-align: center;
+        font-size: 1em;
+    }
+}
+
 .feedbacks {
     position: relative;
-
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -685,7 +713,7 @@ b::after {
     content: "";
     display: block;
     z-index: 1;
-    width: 100vw;
+    width: 100%;
     height: 1px;
     background-color: white;
 }
@@ -888,8 +916,10 @@ footer {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    padding-top: 25vh;
+    height: 75vh;
     gap: 40px;
-    height: auto; 
+
   }
 
   .feedback-card {
