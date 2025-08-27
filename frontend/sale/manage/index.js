@@ -6,6 +6,33 @@ const idFuncionarioInput = document.getElementById("idFuncionario");
 const campoData = document.getElementById("campoData");
 const selectHorario = document.getElementById("selectHorario");
 
+const menuBtn = document.getElementById("menuBtn");
+const navBackground = document.getElementById("navBackground");
+      let showMenu = false;
+
+        menuBtn.addEventListener("click", () => {
+            showMenu = !showMenu;
+
+            // Toggle class
+            menuBtn.classList.toggle("close", showMenu);
+            navBackground.classList.toggle("show", showMenu);
+
+            // Manage transition delays
+            navBackground.style.transitionDelay = showMenu ? "0s" : "0.25s";
+            navBackground.childNodes.forEach((el) => {
+                if (el.nodeType === 1) {
+                    el.style.transitionDelay = showMenu ? "0.25s" : "0s";
+                }
+            });
+        });
+
+        function navigateTo(path) {
+            // This simulates navigation; replace with real logic if needed
+            alert(`Navigating to ${path}`);
+        }
+
+
+
 // Função para carregar serviços e preencher a combo box
 async function carregarServicos() {
   try {

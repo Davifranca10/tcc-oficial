@@ -1,98 +1,24 @@
-/* Reset básico e estruturação */
+/* Reset e base */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Fonte e cor de fundo agradáveis */
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(to bottom right, #1a1a1a, #2b2b2b);
-    color: #ddd;
-}
-
-/* Cabeçalho elegante */
-.hero {
-    background: linear-gradient(to right, #4c2f30, #6e494a);
-    color: #f4c16d; /* Dourado suave */
-    padding: 3rem 1rem;
-    text-align: center;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-    border-bottom-left-radius: 2rem;
-    border-bottom-right-radius: 2rem;
-}
-
-.hero h1 {
-    font-size: 2.7rem;
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
-    color: #f4c16d; /* Dourado */
-}
-
-.hero p {
-    font-size: 1.1rem;
-    color: #eea1a2; /* Rosa claro */
-    opacity: 0.9;
-    font-weight: 300;
-}
-
-/* Container do calendário com efeito glassmorphism */
-.calendar-wrapper {
-    max-width: 1000px;
-    margin: -40px auto 60px auto;
-    padding: 2rem;
-    background: rgba(20, 20, 20, 0.85);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-    border-radius: 1.5rem;
-    color: #eee;
-}
-
-/* Estilo base do calendário */
-#calendar {
-    max-width: 100%;
-}
-
-/* Estilo dos eventos */
-.fc-event {
-    background-color: #c28a8b; /* Rosa esmaecido */
-    color: white;
-    border-radius: 6px;
-    padding: 4px 6px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.3s ease;
-}
-
-.fc-event:hover {
-    background-color: #e97678;
-    cursor: pointer;
-}
-
-/* Botões de navegação modernos do FullCalendar */
-.fc-button {
-    background-color: #b18788; /* Rosa-dourado */
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background 0.3s ease;
-}
-
-.fc-button:hover {
-    background-color: #9e6e6f; /* Rosa mais escuro */
+    background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+    color: #e0e0e0;
+    line-height: 1.6;
+    min-height: 100vh;
 }
 
 /* Navbar */
 #navBarRoot {
     position: fixed;
-    height: 5vh;
+    top: 0;
     width: 100%;
-    margin-bottom: -5vh;
-    z-index: 100;
-    animation: appear 3s ease-out;
+    z-index: 1000;
 }
 
 .menu-btn {
@@ -102,21 +28,14 @@ body {
     top: 25px;
     height: 20px;
     cursor: pointer;
-    transition: all 0.5s ease-out;
 }
 
-/* Hamburger lines */
 .menu-btn .btn-line {
     width: 28px;
     height: 3px;
-    margin: 0 0 5px 0;
-    background: white;
-    transition: all 0.5s ease-out;
-}
-
-/* Transform hamburger to X */
-.menu-btn.close {
-    transform: rotate(180deg);
+    margin: 5px 0;
+    background: #f4c16d;
+    transition: all 0.5s ease;
 }
 
 .menu-btn.close .btn-line:nth-child(1) {
@@ -131,101 +50,478 @@ body {
     transform: rotate(-45deg) translate(7px, -6px);
 }
 
-/* Menu container */
-.menu {
-    position: fixed;
-    z-index: 2;
-    top: 0;
-    width: 100%;
-    opacity: 0.9;
-    visibility: hidden;
-}
-
-.menu.show {
-    visibility: visible;
-}
-
-/* Navbar background */
 #navBackground {
-    transition: 0.25s ease-in-out;
     position: absolute;
-    background-color: #b18788; /* rosa-dourado */
-    width: 0%;
+    top: 0;
+    left: 0;
+    background-color: #191919;
     height: 70px;
-
+    width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    column-gap: 5vw;
+    gap: 5vw;
+    transition: width 0.4s ease;
+    z-index: 2;
 }
 
 #navBackground.show {
     width: 100%;
 }
 
+/* === MENU: Fonte e tamanho ajustados para o padrão do site === */
 #navBackground p {
+    color: #F4C16D;
+    font-family: "Montserrat", sans-serif;    
+    font-size: 0.6em;                        
+    letter-spacing: 3px;                    
+    text-indent: 5px;                         
     cursor: pointer;
-    text-align: center;
-
-    letter-spacing: 3px;
-    text-indent: 5px;
-    font-size: 0.6em;
-    font-family: "Montserrat", sans-serif;
-    font-weight: 400;
-
-    color: white;
-    transition-duration: 0.25s;
     opacity: 0;
-    filter: brightness(0.5) blur(5px);
-    transform: translateY(1vh);
+    transform: translateY(1vh);              
+    transition: all 0.25s ease;              
 }
 
 #navBackground.show p {
-    filter: brightness(1) blur(0);
-    transform: translateY(0vh);
     opacity: 1;
+    transform: translateY(0);
 }
 
-/* Centralização botão */
-.centralizar-horizontal {
+/* Hero Header */
+.hero {
+    background: linear-gradient(120deg, #4c2f30, #6e494a, #5a3a3b);
+    color: #f4c16d;
+    padding: 2rem 1rem 1.8rem;
     text-align: center;
-    margin-top: 40px;
+    border-bottom-left-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
-/* Botão personalizado */
-.meu-botao {
-    padding: 12px 24px;
-    background-color: #b18788; /* rosa-dourado */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero i.icon-large {
+    font-size: 2.3rem;
+    margin-bottom: 0.6rem;
+    color: #f4c16d;
+    opacity: 0.9;
+}
+
+.hero h1 {
+    font-size: 2.3rem;
+    margin-bottom: 0.6rem;
+    letter-spacing: 1.2px;
     font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: #f4c16d;
 }
 
-.meu-botao:hover {
-    background-color: #9e6e6f;
-    transform: scale(1.05);
+.hero p {
+    font-size: 1rem;
+    color: #eea1a2;
+    max-width: 500px;
+    margin: 0 auto;
+    opacity: 0.95;
 }
 
-/* Botão verificar */
-.botao-verificar {
-    background-color: #dd9394; /* rosa mais claro */
+/* Container principal */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: -1rem auto 4rem;
+    justify-content: center;
+}
+
+/* Calendário */
+.calendar-section {
+    flex: 1 1 700px;
+    min-width: 300px;
+}
+
+#calendar {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    flex: 0 1 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: #f4c16d;
+}
+
+.card p,
+.card ul {
+    font-size: 0.95rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+.card ul {
+    padding-left: 1.2rem;
+}
+
+.card ul li {
+    margin: 0.4rem 0;
+}
+
+.card-icon {
+    font-size: 1.8rem;
+    color: #f4c16d;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+/* Botão principal */
+.btn-primary {
+    background-color: #dd9394;
     color: white;
-    padding: 12px 24px;
-    font-size: 16px;
     border: none;
+    padding: 12px 20px;
     border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    justify-items: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
 }
 
-.botao-verificar:hover {
-    background-color: #cc8f90; /* rosa escuro */
-    transform: scale(1.05);
+.btn-primary:hover {
+    background-color: #cc8f90;
+    transform: scale(1.03);
+}
+
+/* FullCalendar custom */
+.fc {
+    --fc-border-color: rgba(255, 255, 255, 0.1);
+    --fc-today-bg-color: rgba(244, 193, 109, 0.2);
+    --fc-accent-color: #f4c16d;
+}
+
+.fc-event {
+    background-color: #c28a8b;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.fc-button-primary {
+    background-color: #b18788 !important;
+    border: none !important;
+    font-weight: 600 !important;
+}
+
+.fc-button-primary:hover {
+    background-color: #9e6e6f !important;
+}
+
+/* ========================================
+   RESPONSIVIDADE COMPLETA
+   ======================================== */
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .sidebar {
+        margin-top: -350px;
+    }
+
+    .hero {
+        padding: 1.8rem 1rem 1.5rem;
+    }
+
+    .hero h1 {
+        font-size: 2.1rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+
+    .hero i.icon-large {
+        font-size: 2.1rem;
+    }
+
+    .container {
+        flex-direction: column;
+        padding: 1rem;
+        margin: -1rem auto 3rem;
+        gap: 1.5rem;
+    }
+
+    .calendar-section {
+        width: 100%;
+    }
+
+    #calendar {
+        padding: 0.8rem;
+        font-size: 0.9em;
+    }
+
+    .fc .fc-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.2rem;
+    }
+
+    .fc .fc-button {
+        font-size: 0.8rem;
+        padding: 0.4em 0.6em;
+        margin: 0.2em;
+    }
+
+    .fc-dayGridMonth-button,
+    .fc-timeGridWeek-button,
+    .fc-timeGridDay-button {
+        font-size: 0.75rem !important;
+        padding: 0.3em 0.5em !important;
+    }
+
+    .sidebar {
+        width: 100%;
+        order: 3;
+    }
+
+    .card {
+        padding: 1.2rem;
+    }
+
+    .card h3 {
+        font-size: 1.2rem;
+    }
+
+    .card p,
+    .card ul {
+        font-size: 0.9rem;
+    }
+
+    .card ul li {
+        margin: 0.3rem 0;
+    }
+
+    .btn-primary {
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+
+    .btn-primary i {
+        font-size: 0.9rem;
+    }
+
+    #navBarRoot {
+        height: 60px;
+    }
+
+    .menu-btn {
+        top: 20px;
+        left: 15px;
+    }
+
+    #navBackground {
+        height: 60px;
+        gap: 10vw;
+    }
+
+    /* === Menu mobile ajustado === */
+    #navBackground p {
+        font-size: 0.6em;           
+        letter-spacing: 3px;
+    }
+}
+
+/* TABLETS (480px – 768px) */
+@media (min-width: 480px) and (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.3rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .container {
+        padding: 1.5rem;
+    }
+
+    .sidebar {
+        flex: 0 1 100%;
+        margin-top: -250px;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card h3,
+    .card p {
+        text-align: center;
+    }
+
+    .card ul {
+        text-align: left;
+        margin: 0 auto;
+    }
+}
+
+/* TABLETS LANDSCAPE E PEQUENOS (769px – 992px) */
+@media (min-width: 769px) and (max-width: 992px) {
+    .container {
+        gap: 1.8rem;
+        padding: 1.8rem;
+    }
+
+    .hero h1 {
+        font-size: 2.4rem;
+    }
+
+    .hero p {
+        font-size: 1.05rem;
+    }
+
+    .sidebar {
+        flex: 0 1 320px;
+    }
+
+    .card {
+        padding: 1.4rem;
+    }
+
+    .btn-primary {
+        font-size: 0.95rem;
+        padding: 11px 18px;
+    }
+
+    #calendar {
+        font-size: 0.95em;
+    }
+
+    .fc .fc-button {
+        padding: 0.5em 0.8em;
+        font-size: 0.9rem;
+    }
+}
+
+/* LARGE DEVICES (1200px+) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1500px;
+        padding: 2.5rem;
+    }
+
+    .hero h1 {
+        font-size: 2.8rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .card {
+        padding: 1.6rem;
+    }
+
+    .btn-primary {
+        font-size: 1.05rem;
+        padding: 13px 24px;
+    }
+
+    #calendar {
+        font-size: 1em;
+    }
+
+    .fc .fc-button {
+        font-size: 0.95rem;
+        padding: 0.6em 1em;
+    }
+}
+
+/* EXTRA SMALL (320px – 375px) */
+@media (max-width: 375px) {
+    .hero {
+        padding: 1.5rem 0.8rem 1.3rem;
+    }
+
+    .hero h1 {
+        font-size: 1.9rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .hero i.icon-large {
+        font-size: 1.9rem;
+    }
+
+    .container {
+        padding: 0.8rem;
+        margin: -0.8rem auto 3rem;
+    }
+
+    .sidebar {
+        padding: 0 0.5rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .card h3 {
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        font-size: 0.95rem;
+        padding: 10px 16px;
+    }
+
+    /* === Menu em telas pequenas === */
+    #navBackground p {
+        font-size: 0.55em;         
+        letter-spacing: 2.5px;
+    }
 }
