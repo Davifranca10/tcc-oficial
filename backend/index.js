@@ -437,27 +437,52 @@ const startServer = async () => {
   // Listar agendamentos (com detalhes e aliases que o frontend espera)
   app.get("/agendamentos", async (req, res) => {
     try {
-      const [rows] = await pool.query(`
-        SELECT 
-          a.id,
-          a.data,
-          a.horario,
-          a.status,
-          s.nome AS servico_nome,
-          s.duracao,
+      const [rows] = await pool.query(
+        `SELECT a.id, a.data, a.horario, a.status,
+          s.nome AS servico_nome, s.duracao,
           f.nome AS funcionario_nome,
-          u.name AS cliente_nome
-        FROM agendamentos a
-        JOIN servicos s ON a.id_servico = s.id
-        JOIN funcionarios f ON a.id_funcionario = f.id
-        JOIN users u ON a.id_cliente = u.id
-        ORDER BY a.data, a.horario
-      `);
+          u.name AS cliente_nome,
+          a.id_cliente
+   FROM agendamentos a
+   JOIN servicos s ON a.id_servico = s.id
+   JOIN funcionarios f ON a.id_funcionario = f.id
+   JOIN users u ON a.id_cliente = u.id`
+      );
 
       res.json(rows);
     } catch (err) {
       console.error("Erro ao buscar agendamentos:", err);
-      res.status(500).json({ message: "Erro ao buscar agendamentos." });
+      res.status(500).json({ error: "Erro ao buscar agendamentos" });
+    }
+  });
+
+  // Listar agendamentos de um cliente específico (por id_cliente)
+  app.get("/agendamentos/cliente/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const [rows] = await pool.query(
+        `SELECT a.id, a.data, a.horario, a.status,
+              s.nome AS servico_nome,
+              f.nome AS funcionario_nome,
+              u.name AS cliente_nome
+       FROM agendamentos a
+       JOIN servicos s ON a.id_servico = s.id
+       JOIN funcionarios f ON a.id_funcionario = f.id
+       JOIN users u ON a.id_cliente = u.id
+       WHERE a.id_cliente = ?
+       ORDER BY a.data DESC, a.horario DESC`,
+        [id]
+      );
+
+      if (rows.length === 0) {
+        return res.status(200).json([]); // Retorna array vazio, não erro
+      }
+
+      res.json(rows);
+    } catch (err) {
+      console.error("Erro ao buscar agendamentos do cliente:", err);
+      res.status(500).json({ error: "Erro ao buscar agendamentos do cliente" });
     }
   });
 
@@ -488,26 +513,26 @@ const startServer = async () => {
       }
       const agendamentoAtual = rows[0];
 
-     const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
-     const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
-     const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
-     const novaData = data ?? agendamentoAtual.data;
-     const novoHorario = horario ?? agendamentoAtual.horario;
-     const novoStatus = status ?? agendamentoAtual.status;
+      const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
+      const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
+      const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
+      const novaData = data ?? agendamentoAtual.data;
+      const novoHorario = horario ?? agendamentoAtual.horario;
+      const novoStatus = status ?? agendamentoAtual.status;
 
       const [result] = await pool.query(
-       `UPDATE agendamentos 
+        `UPDATE agendamentos 
          SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
         WHERE id = ?`,
-       [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
-     );
+        [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
+      );
 
-     if (result.affectedRows === 0) {
-       return res.status(404).json({ message: "Agendamento não encontrado" });
-     }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Agendamento não encontrado" });
+      }
 
-     // Se aceitou, envia email ao cliente
-     if (novoStatus === "aceito") {
+      // Se aceitou, envia email ao cliente
+      if (novoStatus === "aceito") {
         const [[{ email, data: dataAg, horario: horaAg }]] = await pool.query(
           `SELECT u.email, a.data, a.horario
           FROM agendamentos a
@@ -517,13 +542,13 @@ const startServer = async () => {
 
         const mensagem = `Seu pedido no dia ${new Date(dataAg).toLocaleDateString()} às ${horaAg} foi ACEITO.`;
         await enviarEmail(email, "Confirmação de Agendamento", mensagem);
-     }
+      }
 
       res.json({ message: "Agendamento atualizado com sucesso!" });
     } catch (err) {
-     console.error("Erro ao atualizar agendamento:", err.message);
-     res.status(500).json({ message: "Erro interno no servidor" });
-   }
+      console.error("Erro ao atualizar agendamento:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
   });
 
 
@@ -533,7 +558,7 @@ const startServer = async () => {
     try {
       // Busca antes de excluir para poder mandar email
       const [rows] = await pool.query(
-       `SELECT u.email, a.data, a.horario
+        `SELECT u.email, a.data, a.horario
         FROM agendamentos a
         JOIN users u ON a.id_cliente = u.id
          WHERE a.id = ?`, [id]
@@ -548,12 +573,12 @@ const startServer = async () => {
       const [result] = await pool.query("DELETE FROM agendamentos WHERE id = ?", [id]);
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Agendamento não encontrado" });
-     }
+      }
 
-     res.status(200).json({ message: "Agendamento deletado com sucesso" });
+      res.status(200).json({ message: "Agendamento deletado com sucesso" });
     } catch (err) {
-     console.error("Erro ao deletar agendamento:", err.message);
-     res.status(500).json({ message: "Erro interno no servidor" });
+      console.error("Erro ao deletar agendamento:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
 
@@ -649,7 +674,7 @@ const startServer = async () => {
         ORDER BY total DESC
         LIMIT 3
       `);
-    res.json(rows);
+      res.json(rows);
     } catch (err) {
       console.error("Erro na rota /admin/clientes-mais-ativos:", err);
       res.status(500).json({ message: "Erro ao buscar clientes mais ativos" });
