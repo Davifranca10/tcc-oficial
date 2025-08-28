@@ -1,4 +1,3 @@
-const serviceSelect = document.getElementById("serviceSelect");
 const form = document.getElementById("editForm");
 const nomeInput = document.getElementById("nome");
 const descricaoInput = document.getElementById("descricao");
@@ -6,56 +5,48 @@ const precoInput = document.getElementById("preco");
 const duracaoInput = document.getElementById("duracao");
 const imagemInput = document.getElementById("imagem");
 const previewImagem = document.getElementById("previewImagem");
+const serviceIdInput = document.getElementById("serviceId"); // hidden input
 
-let servicos = [];
-
-// Carrega todos os serviços para o select
-async function carregarServicos() {
-  try {
-    const res = await fetch("http://localhost:3000/servicos");
-    if (!res.ok) throw new Error("Erro ao carregar serviços");
-
-    servicos = await res.json();
-
-    serviceSelect.innerHTML = '<option value="">-- Selecione --</option>';
-    servicos.forEach(servico => {
-      const option = document.createElement("option");
-      option.value = servico.id;
-      option.textContent = `${servico.nome} - R$${parseFloat(servico.preco).toFixed(2)} (${servico.duracao} min)`;
-      serviceSelect.appendChild(option);
-    });
-
-    if (servicos.length > 0) {
-      fillForm(servicos[0]);
-    }
-
-    serviceSelect.addEventListener("change", () => {
-      const selectedId = serviceSelect.value;
-      const selectedService = servicos.find(s => s.id == selectedId);
-      if (selectedService) {
-        fillForm(selectedService);
-      }
-    });
-
-  } catch (error) {
-    console.error("Erro ao carregar serviços:", error);
-    serviceSelect.innerHTML = "<option disabled selected>Erro ao carregar</option>";
-  }
+// Extrai o parâmetro 'id' da URL
+function getUrlParameter(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
 }
 
-// Preenche os campos do formulário
-function fillForm(servico) {
-  nomeInput.value = servico.nome;
-  descricaoInput.value = servico.descricao || "";
-  precoInput.value = parseFloat(servico.preco).toFixed(2);
-  duracaoInput.value = servico.duracao || "";
+// Carrega os dados do serviço específico
+async function carregarServico(id) {
+  try {
+    const res = await fetch(`http://localhost:3000/servicos/${id}`);
+    if (!res.ok) {
+      if (res.status === 404) {
+        throw new Error("Serviço não encontrado.");
+      } else {
+        throw new Error("Erro ao carregar serviço.");
+      }
+    }
 
-  // Mostra a imagem atual
-  if (servico.imagem_path) {
-    previewImagem.src = "http://localhost:3000" + servico.imagem_path;
-    previewImagem.style.display = "block";
-  } else {
-    previewImagem.style.display = "none";
+    const servico = await res.json();
+
+    // Preenche os campos
+    nomeInput.value = servico.nome;
+    descricaoInput.value = servico.descricao || "";
+    precoInput.value = parseFloat(servico.preco).toFixed(2);
+    duracaoInput.value = servico.duracao || "";
+    serviceIdInput.value = servico.id;
+    document.getElementById("id_funcionario").value = servico.id_funcionario || "";
+
+    // Mostra prévia da imagem existente
+    if (servico.imagem_path) {
+      previewImagem.src = `http://localhost:3000${servico.imagem_path}`;
+      previewImagem.style.display = "block";
+    } else {
+      previewImagem.style.display = "none";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar serviço:", error);
+    alert(error.message);
+    // Opcional: redirecionar para listagem
+    window.location.href = "../listagem/index.html";
   }
 }
 
@@ -75,21 +66,24 @@ imagemInput.addEventListener("change", (e) => {
 // Submissão do formulário
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const id = serviceSelect.value;
+
+  const id = serviceIdInput.value;
+
+  if (!id) {
+    alert("ID do serviço não encontrado.");
+    return;
+  }
 
   const formData = new FormData();
   formData.append("nome", nomeInput.value);
-  formData.append("descricao", descricaoInput.value);
+  formData.append("descricao", descricaoInput.value || "");
   formData.append("preco", precoInput.value);
   formData.append("duracao", duracaoInput.value);
+  formData.append("id_funcionario", document.getElementById("id_funcionario").value);
 
-  // Se houver nova imagem, adiciona ao FormData
   const file = imagemInput.files[0];
   if (file) {
     formData.append("imagem", file);
-  } else {
-    // Opcional: manter caminho da imagem antiga como string vazia ou nulo
-    formData.append("imagem_path", ""); // só pra garantir compatibilidade
   }
 
   try {
@@ -98,15 +92,27 @@ form.addEventListener("submit", async (e) => {
       body: formData,
     });
 
-    if (!res.ok) throw new Error("Erro ao atualizar serviço");
+    const data = await res.json().catch(() => ({ message: "Erro desconhecido" }));
+
+    if (!res.ok) {
+      throw new Error(data.message || "Erro ao atualizar serviço.");
+    }
 
     alert("Serviço atualizado com sucesso!");
-    window.location.reload();
+    window.location.href = "../listagem/index.html"; // Redireciona para listagem
   } catch (err) {
-    alert("Erro ao salvar alterações.");
-    console.error(err);
+    console.error("Erro ao atualizar serviço:", err);
+    alert("Erro: " + err.message);
   }
 });
 
 // Inicialização
-window.addEventListener("DOMContentLoaded", carregarServicos);
+window.addEventListener("DOMContentLoaded", () => {
+  const id = getUrlParameter("id");
+  if (!id) {
+    alert("ID do serviço não fornecido.");
+    window.location.href = "index.html"; // ou listagem
+    return;
+  }
+  carregarServico(id);
+});

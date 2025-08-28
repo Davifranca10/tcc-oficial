@@ -34,7 +34,6 @@ function preencherFormulario(func) {
   document.getElementById("especialidade").value = func.especialidade || "";
   document.getElementById("telefone").value = func.telefone;
   document.getElementById("email").value = func.email;
-  document.getElementById("senha").value = "";
 }
 
 document.getElementById("editForm").addEventListener("submit", async (e) => {
@@ -45,17 +44,16 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
   const especialidade = document.getElementById("especialidade").value;
   const telefone = document.getElementById("telefone").value;
   const email = document.getElementById("email").value;
-  const senha = document.getElementById("senha").value;
 
-  if (!id || !senha) {
-    return alert("Selecione um funcionário e digite uma nova senha.");
+  if (!id) {
+    return alert("Selecione um funcionário");
   }
 
   try {
     const res = await fetch(`http://localhost:3000/funcionarios/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, especialidade, telefone, email, password: senha })
+      body: JSON.stringify({ nome, especialidade, telefone, email})
     });
 
     const data = await res.json();

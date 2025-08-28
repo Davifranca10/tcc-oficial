@@ -15,7 +15,7 @@
     <p onclick="window.location.href='../../usuario/listagem/index.html'">Gerenciar Usuários</p>
     <p onclick="window.location.href='index.html'">Gerenciar Serviços</p>
     <p onclick="window.location.href='../../funcionario/listar/index.html'">Gerenciar Funcionários</p>
-    <p onclick="window.location.href='index.html'">Gerenciar Agendamentos</p>
+    <p onclick="window.location.href='../../agendamento/listagem/index.html'">Gerenciar Agendamentos</p>
   </div>
   <!-- Conteúdo Principal -->
   <div class="container">
@@ -39,15 +39,10 @@
       </tbody>
     </table>
 
-    <div class="buttons">
-      <a href="../editar/index.html?id=ID_DO_SERVIÇO" id="editLink">
-        <button>Editar</button>
-      </a>
-      <a href="../excluir/index.html">
-        <button>Deletar</button>
-      </a>
-    </div>
-  </div>
+   <div class="buttons">
+  <button id="editServiceBtn">Editar</button>
+  <button id="deleteServiceBtn">Deletar</button>
+</div>
 
   <script src="index.js"></script>
 </body>
