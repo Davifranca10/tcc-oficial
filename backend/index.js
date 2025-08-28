@@ -253,6 +253,35 @@ const startServer = async () => {
     }
   });
 
+
+  // BUSCAR UM SERVIÇO PELO ID (com nome do funcionário)
+app.get("/servicos/:id", async (req, res) => {
+  const { id } = req.params;
+
+  // Valida se o ID é um número
+  if (isNaN(id) || id <= 0) {
+    return res.status(400).json({ message: "ID inválido." });
+  }
+
+  try {
+    const [rows] = await pool.query(`
+      SELECT s.*, f.nome AS nome_funcionario 
+      FROM servicos s
+      LEFT JOIN funcionarios f ON s.id_funcionario = f.id
+      WHERE s.id = ?
+    `, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Serviço não encontrado." });
+    }
+
+    res.json(rows[0]); // Retorna o serviço encontrado
+  } catch (err) {
+    console.error("Erro ao buscar serviço por ID:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
   // Cadastrar serviço
   app.post("/servicos", upload.single("imagem"), async (req, res) => {
     const { nome, descricao, preco, duracao, id_funcionario } = req.body;
@@ -307,6 +336,31 @@ const startServer = async () => {
       res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
+
+  // EXCLUIR SERVIÇO
+app.delete("/servicos/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [rows] = await pool.query("SELECT * FROM servicos WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Serviço não encontrado" });
+    }
+
+    const [agendamentos] = await pool.query("SELECT * FROM agendamentos WHERE id_servico = ?", [id]);
+    if (agendamentos.length > 0) {
+      return res.status(400).json({
+        message: "Não é possível excluir este serviço porque há agendamentos vinculados."
+      });
+    }
+
+    await pool.query("DELETE FROM servicos WHERE id = ?", [id]);
+    return res.status(200).json({ message: "Serviço excluído com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao excluir serviço:", err.message);
+    return res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
 
   //FUNCIONARIOS
 
