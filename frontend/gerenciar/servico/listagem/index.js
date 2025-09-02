@@ -109,8 +109,5 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Erro ao carregar serviços. Verifique a conexão com o servidor.");
     });
 
-  // Botão de adicionar serviço
-  document.getElementById("addServiceBtn").addEventListener("click", () => {
-    window.location.href = "../cadastro/index.html";
-  });
+  
 });

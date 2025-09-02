@@ -160,11 +160,12 @@ form {
 form h1 {
   font-size: 1.5rem;
   margin-bottom: 28px;
-  text-align: center;
+  text-align: left;
   color: #B18788;
   font-weight: 600;
   letter-spacing: -0.3px;
 }
+
 
 label {
   display: block;
