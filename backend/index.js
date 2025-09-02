@@ -255,32 +255,32 @@ const startServer = async () => {
 
 
   // BUSCAR UM SERVIÇO PELO ID (com nome do funcionário)
-app.get("/servicos/:id", async (req, res) => {
-  const { id } = req.params;
+  app.get("/servicos/:id", async (req, res) => {
+    const { id } = req.params;
 
-  // Valida se o ID é um número
-  if (isNaN(id) || id <= 0) {
-    return res.status(400).json({ message: "ID inválido." });
-  }
+    // Valida se o ID é um número
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ message: "ID inválido." });
+    }
 
-  try {
-    const [rows] = await pool.query(`
+    try {
+      const [rows] = await pool.query(`
       SELECT s.*, f.nome AS nome_funcionario 
       FROM servicos s
       LEFT JOIN funcionarios f ON s.id_funcionario = f.id
       WHERE s.id = ?
     `, [id]);
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "Serviço não encontrado." });
-    }
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Serviço não encontrado." });
+      }
 
-    res.json(rows[0]); // Retorna o serviço encontrado
-  } catch (err) {
-    console.error("Erro ao buscar serviço por ID:", err.message);
-    res.status(500).json({ message: "Erro interno no servidor" });
-  }
-});
+      res.json(rows[0]); // Retorna o serviço encontrado
+    } catch (err) {
+      console.error("Erro ao buscar serviço por ID:", err.message);
+      res.status(500).json({ message: "Erro interno no servidor" });
+    }
+  });
 
   // Cadastrar serviço
   app.post("/servicos", upload.single("imagem"), async (req, res) => {
@@ -338,29 +338,29 @@ app.get("/servicos/:id", async (req, res) => {
   });
 
   // EXCLUIR SERVIÇO
-app.delete("/servicos/:id", async (req, res) => {
-  const { id } = req.params;
+  app.delete("/servicos/:id", async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const [rows] = await pool.query("SELECT * FROM servicos WHERE id = ?", [id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "Serviço não encontrado" });
+    try {
+      const [rows] = await pool.query("SELECT * FROM servicos WHERE id = ?", [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Serviço não encontrado" });
+      }
+
+      const [agendamentos] = await pool.query("SELECT * FROM agendamentos WHERE id_servico = ?", [id]);
+      if (agendamentos.length > 0) {
+        return res.status(400).json({
+          message: "Não é possível excluir este serviço porque há agendamentos vinculados."
+        });
+      }
+
+      await pool.query("DELETE FROM servicos WHERE id = ?", [id]);
+      return res.status(200).json({ message: "Serviço excluído com sucesso!" });
+    } catch (err) {
+      console.error("Erro ao excluir serviço:", err.message);
+      return res.status(500).json({ message: "Erro interno no servidor" });
     }
-
-    const [agendamentos] = await pool.query("SELECT * FROM agendamentos WHERE id_servico = ?", [id]);
-    if (agendamentos.length > 0) {
-      return res.status(400).json({
-        message: "Não é possível excluir este serviço porque há agendamentos vinculados."
-      });
-    }
-
-    await pool.query("DELETE FROM servicos WHERE id = ?", [id]);
-    return res.status(200).json({ message: "Serviço excluído com sucesso!" });
-  } catch (err) {
-    console.error("Erro ao excluir serviço:", err.message);
-    return res.status(500).json({ message: "Erro interno no servidor" });
-  }
-});
+  });
 
   //FUNCIONARIOS
 
@@ -556,56 +556,116 @@ app.delete("/servicos/:id", async (req, res) => {
     }
   });
 
-  //Editar agendamento (parcial: suporta enviar só status)
-  app.put("/agendamentos/:id", async (req, res) => {
-    const { id } = req.params;
-    const { id_cliente, id_servico, id_funcionario, data, horario, status } = req.body;
+  //Horarios
+  function calcularBlocos(horario, duracaoMinutos) {
+    const blocos = [];
+    const [hora, minuto] = horario.split(":").map(Number);
+    let tempoInicial = hora * 60 + minuto;
 
-    try {
-      const [rows] = await pool.query("SELECT * FROM agendamentos WHERE id = ?", [id]);
-      if (rows.length === 0) {
-        return res.status(404).json({ message: "Agendamento não encontrado" });
+    const blocosNecessarios = Math.ceil(duracaoMinutos / 30);
+
+    for (let i = 0; i < blocosNecessarios; i++) {
+      const minutosTotal = tempoInicial + i * 30;
+      const h = Math.floor(minutosTotal / 60).toString().padStart(2, "0");
+      const m = (minutosTotal % 60).toString().padStart(2, "0");
+      blocos.push(`${h}:${m}`);
+    }
+
+    return blocos; // ex: ["08:00", "08:30", "09:00"]
+  }
+
+  async function haConflitoBlocos(data, id_funcionario, novosBlocos) {
+  const [rows] = await pool.query(`
+    SELECT a.horario, s.duracao
+    FROM agendamentos a
+    JOIN servicos s ON a.id_servico = s.id
+    WHERE a.data = ? AND a.id_funcionario = ? AND a.status = 'aceito'
+  `, [data, id_funcionario]);
+
+  // Para cada agendamento já aceito, calculamos seus blocos
+  for (const row of rows) {
+    const blocosExistentes = calcularBlocos(row.horario, row.duracao);
+    // Se houver interseção entre os blocos, há conflito
+    if (novosBlocos.some(bloco => blocosExistentes.includes(bloco))) {
+      return true; // Conflito encontrado
+    }
+  }
+
+  return false;
+}
+
+
+  //Editar agendamento (com bloqueio de blocos de 30 min)
+app.put("/agendamentos/:id", async (req, res) => {
+  const { id } = req.params;
+  const { id_cliente, id_servico, id_funcionario, data, horario, status } = req.body;
+
+  try {
+    const [rows] = await pool.query("SELECT * FROM agendamentos WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Agendamento não encontrado" });
+    }
+    const agendamentoAtual = rows[0];
+
+    // Atualizar campos com fallback
+    const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
+    const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
+    const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
+    const novaData = data ?? agendamentoAtual.data;
+    const novoHorario = horario ?? agendamentoAtual.horario;
+    const novoStatus = status ?? agendamentoAtual.status;
+
+    // Só faz validação de blocos se o status for "aceito"
+    if (novoStatus === "aceito") {
+      // Buscar duração do serviço
+      const [[servico]] = await pool.query("SELECT duracao FROM servicos WHERE id = ?", [novoIdServico]);
+      if (!servico) {
+        return res.status(400).json({ message: "Serviço não encontrado" });
       }
-      const agendamentoAtual = rows[0];
 
-      const novoIdCliente = id_cliente ?? agendamentoAtual.id_cliente;
-      const novoIdServico = id_servico ?? agendamentoAtual.id_servico;
-      const novoIdFuncionario = id_funcionario ?? agendamentoAtual.id_funcionario;
-      const novaData = data ?? agendamentoAtual.data;
-      const novoHorario = horario ?? agendamentoAtual.horario;
-      const novoStatus = status ?? agendamentoAtual.status;
+      const duracao = servico.duracao;
+      const blocosNecessarios = calcularBlocos(novoHorario, duracao);
 
-      const [result] = await pool.query(
-        `UPDATE agendamentos 
-         SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
-        WHERE id = ?`,
-        [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
+      // Verificar conflito com outros agendamentos aceitos
+      const conflito = await haConflitoBlocos(novaData, novoIdFuncionario, blocosNecessarios);
+      if (conflito) {
+        return res.status(400).json({
+          message: "Conflito de horário: outro serviço já ocupa um dos blocos necessários."
+        });
+      }
+    }
+
+    // Atualizar agendamento
+    const [result] = await pool.query(
+      `UPDATE agendamentos 
+       SET id_cliente = ?, id_servico = ?, id_funcionario = ?, data = ?, horario = ?, status = ?
+       WHERE id = ?`,
+      [novoIdCliente, novoIdServico, novoIdFuncionario, novaData, novoHorario, novoStatus, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Agendamento não encontrado" });
+    }
+
+    // Se foi aceito, envia email
+    if (novoStatus === "aceito") {
+      const [[{ email, data: dataAg, horario: horaAg }]] = await pool.query(
+        `SELECT u.email, a.data, a.horario
+         FROM agendamentos a
+         JOIN users u ON a.id_cliente = u.id
+         WHERE a.id = ?`, [id]
       );
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Agendamento não encontrado" });
-      }
-
-      // Se aceitou, envia email ao cliente
-      if (novoStatus === "aceito") {
-        const [[{ email, data: dataAg, horario: horaAg }]] = await pool.query(
-          `SELECT u.email, a.data, a.horario
-          FROM agendamentos a
-          JOIN users u ON a.id_cliente = u.id
-          WHERE a.id = ?`, [id]
-        );
-
-        const mensagem = `Seu pedido no dia ${new Date(dataAg).toLocaleDateString()} às ${horaAg} foi ACEITO.`;
-        await enviarEmail(email, "Confirmação de Agendamento", mensagem);
-      }
-
-      res.json({ message: "Agendamento atualizado com sucesso!" });
-    } catch (err) {
-      console.error("Erro ao atualizar agendamento:", err.message);
-      res.status(500).json({ message: "Erro interno no servidor" });
+      const mensagem = `Seu pedido no dia ${new Date(dataAg).toLocaleDateString()} às ${horaAg} foi ACEITO.`;
+      await enviarEmail(email, "Confirmação de Agendamento", mensagem);
     }
-  });
 
+    res.json({ message: "Agendamento atualizado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao atualizar agendamento:", err.message);
+    res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
 
   //excluir agendamento
   app.delete("/agendamentos/:id", async (req, res) => {
@@ -656,6 +716,9 @@ app.delete("/servicos/:id", async (req, res) => {
       res.status(500).json({ message: "Erro interno no servidor" });
     }
   });
+
+
+
 
   // Rota para visão geral do painel administrativo
   app.get("/admin/visao-geral", async (req, res) => {
@@ -862,50 +925,57 @@ app.delete("/servicos/:id", async (req, res) => {
     }));
   }
 
-  function gerarHorariosValidos(duracaoServicoSelecionado, agendamentos) {
-    const MARGEM = 30; // 30 minutos extras
-    const JANELA_INICIO = 8 * 60;  // 08:00 em minutos
-    const JANELA_FIM = 18 * 60;    // 18:00 em minutos
+function gerarHorariosValidos(duracaoServicoSelecionado, agendamentos) {
+  const MARGEM = 0; // Remova a margem aqui, ou use apenas no backend
+  const JANELA_INICIO = 8 * 60;  // 08:00
+  const JANELA_FIM = 18 * 60;    // 18:00
 
-    // Grade fixa a cada 30 minutos
-    const todosHorarios = [];
-    for (let min = JANELA_INICIO; min < JANELA_FIM; min += 30) {
-      const h = String(Math.floor(min / 60)).padStart(2, "0");
-      const m = String(min % 60).padStart(2, "0");
-      todosHorarios.push(`${h}:${m}`);
-    }
-
-    const toMin = (hhmm) => {
-      const [h, m] = hhmm.split(":").map(Number);
-      return h * 60 + m;
-    };
-
-    // Intervalos ocupados
-    const ocupados = agendamentos.map(a => {
-      const ini = toMin(a.horario);
-      const fim = ini + a.duracao + MARGEM;
-      return [ini, fim];
-    });
-
-    const overlap = (ini, fim) => ocupados.some(([s, e]) => ini < e && fim > s);
-
-    const disponiveis = [];
-    const duracaoTotal = Number(duracaoServicoSelecionado) + MARGEM;
-
-    for (const h of todosHorarios) {
-      const ini = toMin(h);
-      const fim = ini + duracaoTotal;
-
-      if (fim > JANELA_FIM) continue;
-
-      if (!overlap(ini, fim)) {
-        disponiveis.push(h);
-      }
-    }
-
-    return disponiveis;
+  const todosHorarios = [];
+  for (let min = JANELA_INICIO; min < JANELA_FIM; min += 30) {
+    const h = String(Math.floor(min / 60)).padStart(2, "0");
+    const m = String(min % 60).padStart(2, "0");
+    todosHorarios.push(`${h}:${m}`);
   }
 
+  const toMin = (hhmm) => {
+    const [h, m] = hhmm.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  // Para cada agendamento existente, marcar todos os blocos ocupados
+  const blocosOcupados = new Set();
+
+  for (const agendamento of agendamentos) {
+    const blocos = calcularBlocos(agendamento.horario, agendamento.duracao + MARGEM);
+    blocos.forEach(bloco => blocosOcupados.add(bloco));
+  }
+
+  const duracaoTotal = duracaoServicoSelecionado + MARGEM;
+  const blocosNecessarios = Math.ceil(duracaoTotal / 30);
+
+  const disponiveis = [];
+
+  for (const horario of todosHorarios) {
+    const blocosSolicitados = [];
+    let temp = toMin(horario);
+    for (let i = 0; i < blocosNecessarios; i++) {
+      const h = Math.floor(temp / 60).toString().padStart(2, "0");
+      const m = (temp % 60).toString().padStart(2, "0");
+      blocosSolicitados.push(`${h}:${m}`);
+      temp += 30;
+    }
+
+    // Verifica se todos os blocos solicitados estão livres
+    const livre = blocosSolicitados.every(bloco => !blocosOcupados.has(bloco));
+    const dentroDoHorario = temp <= JANELA_FIM;
+
+    if (livre && dentroDoHorario) {
+      disponiveis.push(horario);
+    }
+  }
+
+  return disponiveis;
+}
   /* Middleware Global de Erro */
   app.use((err, req, res, next) => {
     console.error("Middleware de erro global:", err.message);
